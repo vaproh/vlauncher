@@ -78,7 +78,7 @@ object Icons {
         label: String,
     ): Drawable {
         val pack = Prefs(context).iconPack
-        val key = "$pack|$packageName|$className"
+        val key = "$pack|${user.hashCode()}|$packageName|$className|$label"
         cache.get(key)?.let { return it }
         val icon = packIcon(context, pack, packageName, className)
             ?: systemIcon(context, packageName, className, user)
