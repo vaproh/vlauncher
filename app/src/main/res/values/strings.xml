@@ -180,4 +180,6 @@
     <string name="font_jetbrains_mono">JetBrains Mono</string>
     <string name="font_iosevka">Iosevka</string>
     <string name="font_inter">Inter</string>
+    <string name="icon_pack">Icon pack</string>
+    <string name="icon_pack_system">System</string>
 </resources>

@@ -21,6 +21,7 @@ import app.vlauncher.data.Constants
 import app.vlauncher.databinding.AdapterAppDrawerBinding
 import app.vlauncher.databinding.AdapterPrivateSpaceHeaderBinding
 import app.vlauncher.helper.hideKeyboard
+import app.vlauncher.helper.Icons
 import app.vlauncher.helper.isSystemApp
 import app.vlauncher.helper.showKeyboard
 import java.text.Normalizer
@@ -244,6 +245,20 @@ class AppDrawerAdapter(
                 if (appModel.isNew) append(" ✦")
             }
             appTitle.gravity = appLabelGravity
+            if (appModel.appPackage.isEmpty()) {
+                appIcon.visibility = View.GONE
+            } else {
+                appIcon.visibility = View.VISIBLE
+                appIcon.setImageDrawable(
+                    Icons.forApp(
+                        root.context,
+                        appModel.appPackage,
+                        (appModel as? AppModel.App)?.activityClassName,
+                        appModel.user,
+                        appModel.appLabel,
+                    )
+                )
+            }
             otherProfileIndicator.isVisible = appModel.user != myUserHandle
 
             appTitle.setOnClickListener { clickListener(appModel) }

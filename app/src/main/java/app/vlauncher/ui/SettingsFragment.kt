@@ -40,6 +40,7 @@ import app.vlauncher.helper.setPlainWallpaper
 import app.vlauncher.helper.shareApp
 import app.vlauncher.helper.OlDialog
 import app.vlauncher.helper.Fonts
+import app.vlauncher.helper.Icons
 import app.vlauncher.helper.showPopupMenu
 import app.vlauncher.helper.showStatusBar
 import app.vlauncher.helper.showToast
@@ -84,6 +85,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         populateTextSize()
         populateBoldFont()
         populateFont()
+        populateIconPack()
         populateAlignment()
         populateStatusBar()
         populateDateTime()
@@ -113,6 +115,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
             R.id.textSizeValue -> showTextSizeDialog()
             R.id.boldFont -> toggleBoldFont()
             R.id.fontFamily -> showFontMenu(view)
+            R.id.iconPack -> showIconPackMenu(view)
 
             R.id.swipeLeftApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_LEFT_APP)
             R.id.swipeRightApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_RIGHT_APP)
@@ -167,6 +170,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         binding.textSizeValue.setOnClickListener(this)
         binding.boldFont.setOnClickListener(this)
         binding.fontFamily.setOnClickListener(this)
+        binding.iconPack.setOnClickListener(this)
 
         binding.share.setOnClickListener(this)
         binding.github.setOnClickListener(this)
@@ -547,6 +551,29 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
 
     private fun populateFont() {
         binding.fontFamily.text = Fonts.labelFor(requireContext(), prefs.fontFamily)
+    }
+
+    private fun showIconPackMenu(anchor: View) {
+        val packs = Icons.packs(requireContext())
+        anchor.showPopupMenu(configure = { menu ->
+            menu.add(Menu.NONE, 0, 0, getString(R.string.icon_pack_system))
+            packs.forEachIndexed { index, pack ->
+                menu.add(Menu.NONE, index + 1, index + 1, pack.label)
+            }
+        }) { item ->
+            val selected = if (item.itemId == 0) "" else packs.getOrNull(item.itemId - 1)?.packageName ?: ""
+            if (selected != prefs.iconPack) {
+                prefs.iconPack = selected
+                requireActivity().recreate()
+            }
+        }
+    }
+
+    private fun populateIconPack() {
+        val pack = prefs.iconPack
+        binding.iconPack.text = if (pack.isEmpty()) getString(R.string.icon_pack_system)
+        else Icons.packs(requireContext()).firstOrNull { it.packageName == pack }?.label
+            ?: getString(R.string.icon_pack_system)
     }
 
     private fun populateScreenTimeOnOff() {
