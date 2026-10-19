@@ -18,10 +18,22 @@ android {
         minSdkVersion 24
         targetSdkVersion 36
         versionCode 1
-        versionName "v1.0.0"
+        versionName System.getenv('VERSION_NAME') ?: "v1.0.0"
 
         resourceConfigurations += ["en", "ar", "cs", "da", "de", "el", "es-rES", "es-rUS", "fi", "fr", "he", "hi", "hr", "hu", "in", "it", "ja", "ko", "nb", "nl", "pl", "pt-rBR", "ro", "ru-rRU", "sv", "th", "tr", "uk", "vi", "zh"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            // CI-only: credentials come from GitHub secrets, absent locally
+            if (System.getenv('KEYSTORE_FILE') != null) {
+                storeFile file(System.getenv('KEYSTORE_FILE'))
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias System.getenv('KEY_ALIAS')
+                keyPassword System.getenv('KEY_PASSWORD')
+            }
+        }
     }
 
     buildTypes {
@@ -29,6 +41,8 @@ android {
             debuggable false
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (System.getenv('KEYSTORE_FILE') != null) signingConfig signingConfigs.release
+        }
         }
         debug {
             debuggable true
