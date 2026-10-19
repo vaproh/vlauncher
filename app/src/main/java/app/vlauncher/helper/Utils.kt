@@ -439,7 +439,7 @@ suspend fun getTodaysWallpaper(
             }
 
             val json = JSONObject(stringBuffer.toString())
-            if (frequencyHours >= 24) {
+            if (WallpaperSelection.isDateKeyed(frequencyHours)) {
                 val month = SimpleDateFormat("M", Locale.ENGLISH).format(Date()).toIntOrNull() ?: 0
                 val day = SimpleDateFormat("d", Locale.ENGLISH).format(Date()).toIntOrNull() ?: 0
                 val key = WallpaperSelection.keyFor(firstOpenTime.isDaySince(), month, day)

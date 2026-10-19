@@ -3,6 +3,9 @@ package app.vlauncher.helper
 /** Pure selection helpers for the daily wallpaper JSON, kept testable off-device. */
 object WallpaperSelection {
 
+    /** Only Daily uses the calendar date; every other frequency cycles the curated list. */
+    fun isDateKeyed(frequencyHours: Int): Boolean = frequencyHours == 24
+
     /** First ten days after setup use their own slot, later days use the month and day. */
     fun keyFor(daysSinceFirstOpen: Int, month: Int, day: Int): String =
         if (daysSinceFirstOpen < 10) "0_$daysSinceFirstOpen" else "${month}_$day"

@@ -1,10 +1,19 @@
 package app.vlauncher.helper
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class WallpaperSelectionTest {
+
+    @Test
+    fun `only daily uses the date key`() {
+        assertTrue(WallpaperSelection.isDateKeyed(24))
+        assertFalse(WallpaperSelection.isDateKeyed(23))
+        assertFalse(WallpaperSelection.isDateKeyed(168))
+    }
 
     @Test
     fun `first ten days use their own key then month and day`() {
