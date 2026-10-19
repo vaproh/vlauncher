@@ -90,11 +90,11 @@ object Constants {
 
     const val MIN_ANIM_REFRESH_RATE = 30f
 
-    const val URL_ABOUT_OLAUNCHER = "https://github.com/vaproh/Olauncher"
-    const val URL_OLAUNCHER_PRIVACY = "https://github.com/vaproh/Olauncher/blob/master/PRIVACY.md"
+    const val URL_ABOUT_OLAUNCHER = "https://github.com/vaproh/vlauncher"
+    const val URL_OLAUNCHER_PRIVACY = "https://github.com/vaproh/vlauncher/blob/master/PRIVACY.md"
     const val URL_DOUBLE_TAP = "https://tanujnotes.notion.site/Double-tap-to-lock-Olauncher-0f7fb103ec1f47d7a90cdfdcd7fb86ef"
-    const val URL_OLAUNCHER_GITHUB = "https://github.com/vaproh/Olauncher"
-    const val URL_OLAUNCHER_PLAY_STORE = "https://github.com/vaproh/Olauncher"
+    const val URL_OLAUNCHER_GITHUB = "https://github.com/vaproh/vlauncher"
+    const val URL_OLAUNCHER_PLAY_STORE = "https://github.com/vaproh/vlauncher"
     const val URL_OLAUNCHER_PRO = "https://play.google.com/store/apps/details?id=app.prolauncher"
     const val URL_PLAY_STORE_DEV = "https://play.google.com/store/apps/dev?id=7198807840081074933"
     const val URL_TWITTER_TANUJ = "https://github.com/vaproh"
