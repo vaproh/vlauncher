@@ -20,6 +20,8 @@ class Prefs(context: Context) {
     private val KEYBOARD_MESSAGE = "KEYBOARD_MESSAGE"
     private val DAILY_WALLPAPER = "DAILY_WALLPAPER"
     private val DAILY_WALLPAPER_URL = "DAILY_WALLPAPER_URL"
+    private val WALLPAPER_FREQUENCY = "WALLPAPER_FREQUENCY"
+    private val WALLPAPER_CURSOR = "WALLPAPER_CURSOR"
     private val HOME_ALIGNMENT = "HOME_ALIGNMENT"
     private val HOME_BOTTOM_ALIGNMENT = "HOME_BOTTOM_ALIGNMENT"
     private val APP_LABEL_ALIGNMENT = "APP_LABEL_ALIGNMENT"
@@ -160,6 +162,15 @@ class Prefs(context: Context) {
     var dailyWallpaperUrl: String
         get() = prefs.getString(DAILY_WALLPAPER_URL, "").toString()
         set(value) = prefs.edit { putString(DAILY_WALLPAPER_URL, value).apply() }
+
+    /** How often the wallpaper changes, in hours. 24 keeps the date-based image. */
+    var wallpaperFrequency: Int
+        get() = prefs.getInt(WALLPAPER_FREQUENCY, 24)
+        set(value) = prefs.edit { putInt(WALLPAPER_FREQUENCY, value).apply() }
+
+    var wallpaperCursor: Int
+        get() = prefs.getInt(WALLPAPER_CURSOR, 0)
+        set(value) = prefs.edit { putInt(WALLPAPER_CURSOR, value).apply() }
 
     var homeAppsNum: Int
         get() = prefs.getInt(HOME_APPS_NUM, 4)

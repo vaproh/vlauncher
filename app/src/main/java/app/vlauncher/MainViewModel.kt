@@ -421,7 +421,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
-        val uploadWorkRequest = PeriodicWorkRequestBuilder<WallpaperWorker>(4, TimeUnit.HOURS)
+        // Daily keeps the date-based image, so a 4 hour check still catches the day change.
+        // Every other frequency advances the cursor on each run and uses its own period.
+        val frequency = prefs.wallpaperFrequency.coerceAtLeast(1)
+        val periodHours = if (frequency == 24) 4L else frequency.toLong()
+        val uploadWorkRequest = PeriodicWorkRequestBuilder<WallpaperWorker>(periodHours, TimeUnit.HOURS)
             .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.HOURS)
             .setConstraints(constraints)
             .build()
