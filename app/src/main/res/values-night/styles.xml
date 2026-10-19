@@ -70,6 +70,7 @@
     </style>
 
     <style name="TextDefault" parent="@android:style/TextAppearance.Large">
+        <item name="android:fontFamily">?attr/mainFontFamily</item>
         <item name="android:textColor">@drawable/text_colors_default</item>
         <item name="android:textColorHint">?attr/primaryColorTrans80</item>
         <item name="android:shadowColor">?attr/primaryTextShadowColor</item>
