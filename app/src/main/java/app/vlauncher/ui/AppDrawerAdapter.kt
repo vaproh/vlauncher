@@ -29,6 +29,7 @@ import java.text.Normalizer
 class AppDrawerAdapter(
     private var flag: Int,
     private val appLabelGravity: Int,
+    private val showIcons: Boolean,
     private val appClickListener: (AppModel) -> Unit,
     private val appInfoListener: (AppModel) -> Unit,
     private val appDeleteListener: (AppModel) -> Unit,
@@ -114,6 +115,7 @@ class AppDrawerAdapter(
                 is ViewHolder -> holder.bind(
                     flag,
                     appLabelGravity,
+                    showIcons,
                     myUserHandle,
                     appModel,
                     appClickListener,
@@ -227,6 +229,7 @@ class AppDrawerAdapter(
         fun bind(
             flag: Int,
             appLabelGravity: Int,
+            showIcons: Boolean,
             myUserHandle: UserHandle,
             appModel: AppModel,
             clickListener: (AppModel) -> Unit,
@@ -245,7 +248,7 @@ class AppDrawerAdapter(
                 if (appModel.isNew) append(" ✦")
             }
             appTitle.gravity = appLabelGravity
-            if (appModel.appPackage.isEmpty()) {
+            if (!showIcons || appModel.appPackage.isEmpty()) {
                 appIcon.visibility = View.GONE
             } else {
                 appIcon.visibility = View.VISIBLE
@@ -261,9 +264,9 @@ class AppDrawerAdapter(
             }
             otherProfileIndicator.isVisible = appModel.user != myUserHandle
 
-            appTitle.setOnClickListener { clickListener(appModel) }
+            appRow.setOnClickListener { clickListener(appModel) }
 
-            appTitle.setOnLongClickListener {
+            appRow.setOnLongClickListener {
                 if (appModel.appPackage.isNotEmpty()) {
                     appDelete.alpha = when (
                         appModel is AppModel.PinnedShortcut || !root.context.isSystemApp(appModel.appPackage, appModel.user)

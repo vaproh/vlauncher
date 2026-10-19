@@ -6,6 +6,7 @@ import android.content.pm.LauncherApps
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
@@ -24,8 +25,16 @@ import kotlin.math.abs
  */
 object Icons {
 
-    /** Apex/ADW and Go Launcher theme actions, the de-facto icon pack intents. */
-    private val PACK_ACTIONS = listOf("org.adw.launcher.THEMES", "com.gau.go.launcherex.theme")
+    /** Theme actions/categories declared by the common launcher icon pack formats. */
+    private val PACK_ACTIONS = listOf(
+        "org.adw.launcher.THEMES",
+        "com.gau.go.launcherex.theme",
+        "com.novalauncher.THEME",
+        "com.teslacoilsw.launcher.THEME",
+    )
+
+    /** Apex exposes its theme as a category on ACTION_MAIN rather than an action. */
+    private val PACK_CATEGORIES = listOf("com.anddoes.launcher.THEME")
 
     data class Pack(val packageName: String, val label: String)
 
@@ -40,11 +49,15 @@ object Icons {
     fun packs(context: Context): List<Pack> {
         val packageManager = context.packageManager
         val found = LinkedHashMap<String, String>()
+        val add: (android.content.pm.ResolveInfo) -> Unit = { activity ->
+            val packageName = activity.activityInfo.packageName
+            if (packageName !in found) found[packageName] = activity.loadLabel(packageManager).toString()
+        }
         PACK_ACTIONS.forEach { action ->
-            packageManager.queryIntentActivities(Intent(action), 0).forEach { activity ->
-                val packageName = activity.activityInfo.packageName
-                if (packageName !in found) found[packageName] = activity.loadLabel(packageManager).toString()
-            }
+            packageManager.queryIntentActivities(Intent(action), 0).forEach(add)
+        }
+        PACK_CATEGORIES.forEach { category ->
+            packageManager.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(category), 0).forEach(add)
         }
         return found.map { Pack(it.key, it.value) }.sortedBy { it.label.lowercase() }
     }
@@ -72,6 +85,31 @@ object Icons {
             ?: monogram(context, label, packageName)
         cache.put(key, icon)
         return icon
+    }
+
+    /** Wraps a drawable with a fixed intrinsic size, for compound drawables. */
+    fun fixedSize(drawable: Drawable, sizePx: Int): Drawable = FixedSizeDrawable(drawable, sizePx)
+
+    private class FixedSizeDrawable(private val inner: Drawable, private val size: Int) : Drawable() {
+        override fun draw(canvas: Canvas) {
+            inner.setBounds(bounds)
+            inner.draw(canvas)
+        }
+
+        override fun setAlpha(alpha: Int) {
+            inner.alpha = alpha
+        }
+
+        override fun setColorFilter(colorFilter: ColorFilter?) {
+            inner.colorFilter = colorFilter
+        }
+
+        @Deprecated("Deprecated in Drawable")
+        override fun getOpacity(): Int = inner.opacity
+
+        override fun getIntrinsicWidth(): Int = size
+
+        override fun getIntrinsicHeight(): Int = size
     }
 
     private fun packIcon(context: Context, pack: String, packageName: String, className: String?): Drawable? {

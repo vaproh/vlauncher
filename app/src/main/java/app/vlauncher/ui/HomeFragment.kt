@@ -8,6 +8,7 @@ import android.content.res.Configuration
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
+import android.os.UserHandle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +36,7 @@ import app.vlauncher.helper.dpToPx
 import app.vlauncher.helper.expandNotificationDrawer
 import app.vlauncher.helper.getChangedAppTheme
 import app.vlauncher.helper.getUserHandleFromString
+import app.vlauncher.helper.Icons
 import app.vlauncher.helper.isPackageInstalled
 import app.vlauncher.helper.openAlarmApp
 import app.vlauncher.helper.openCalendar
@@ -405,13 +407,16 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
                 // Check if our shortcut still exists
                 if (shortcuts?.any { it.id == shortcutId } == true) {
                     textView.text = appName
+                    setHomeAppIcon(textView, packageName, userHandle, appName)
                     return true
                 }
                 textView.text = ""
+                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
                 return false
             } catch (e: Exception) {
                 e.printStackTrace()
                 textView.text = ""
+                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
                 return false
             }
         }
@@ -419,10 +424,26 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         // Regular app check
         if (isPackageInstalled(requireContext(), packageName, userString)) {
             textView.text = appName
+            setHomeAppIcon(textView, packageName, userHandle, appName)
             return true
         }
         textView.text = ""
+        textView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
         return false
+    }
+
+    private fun setHomeAppIcon(textView: TextView, packageName: String, user: UserHandle, label: String) {
+        if (!prefs.showAppIcons) {
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
+            return
+        }
+        textView.compoundDrawablePadding = 16.dpToPx()
+        textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            Icons.fixedSize(Icons.forApp(requireContext(), packageName, null, user, label), 32.dpToPx()),
+            null,
+            null,
+            null,
+        )
     }
 
     private fun hideHomeApps() {

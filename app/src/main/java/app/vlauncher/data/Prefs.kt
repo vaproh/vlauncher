@@ -39,6 +39,7 @@ class Prefs(context: Context) {
     private val BOLD_FONT = "BOLD_FONT"
     private val FONT_FAMILY = "FONT_FAMILY"
     private val ICON_PACK = "ICON_PACK"
+    private val SHOW_APP_ICONS = "SHOW_APP_ICONS"
     private val PRO_MESSAGE_SHOWN = "PRO_MESSAGE_SHOWN"
     private val HIDE_SET_DEFAULT_LAUNCHER = "HIDE_SET_DEFAULT_LAUNCHER"
     private val SCREEN_TIME_LAST_UPDATED = "SCREEN_TIME_LAST_UPDATED"
@@ -214,6 +215,10 @@ class Prefs(context: Context) {
     var iconPack: String
         get() = prefs.getString(ICON_PACK, "").toString()
         set(value) = prefs.edit { putString(ICON_PACK, value).apply() }
+
+    var showAppIcons: Boolean
+        get() = prefs.getBoolean(SHOW_APP_ICONS, true)
+        set(value) = prefs.edit { putBoolean(SHOW_APP_ICONS, value).apply() }
 
     var proMessageShown: Boolean
         get() = prefs.getBoolean(PRO_MESSAGE_SHOWN, false)

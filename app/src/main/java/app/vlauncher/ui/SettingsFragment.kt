@@ -85,6 +85,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         populateTextSize()
         populateBoldFont()
         populateFont()
+        populateAppIcons()
         populateIconPack()
         populateAlignment()
         populateStatusBar()
@@ -116,6 +117,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
             R.id.boldFont -> toggleBoldFont()
             R.id.fontFamily -> showFontMenu(view)
             R.id.iconPack -> showIconPackMenu(view)
+            R.id.appIcons -> toggleAppIcons()
 
             R.id.swipeLeftApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_LEFT_APP)
             R.id.swipeRightApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_RIGHT_APP)
@@ -171,6 +173,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         binding.boldFont.setOnClickListener(this)
         binding.fontFamily.setOnClickListener(this)
         binding.iconPack.setOnClickListener(this)
+        binding.appIcons.setOnClickListener(this)
 
         binding.share.setOnClickListener(this)
         binding.github.setOnClickListener(this)
@@ -574,6 +577,17 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         binding.iconPack.text = if (pack.isEmpty()) getString(R.string.icon_pack_system)
         else Icons.packs(requireContext()).firstOrNull { it.packageName == pack }?.label
             ?: getString(R.string.icon_pack_system)
+    }
+
+    private fun toggleAppIcons() {
+        prefs.showAppIcons = !prefs.showAppIcons
+        populateAppIcons()
+        requireActivity().recreate()
+    }
+
+    private fun populateAppIcons() {
+        binding.appIcons.text = getString(if (prefs.showAppIcons) R.string.on else R.string.off)
+        binding.iconPackRow.visibility = if (prefs.showAppIcons) View.VISIBLE else View.GONE
     }
 
     private fun populateScreenTimeOnOff() {
