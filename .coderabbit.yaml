@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "master"
+    ignore_title_keywords:
+      - "WIP"
+      - "[skip review]"
+  path_filters:
+    - "!**/build/**"
+    - "!**/.gradle/**"
+    - "!**/*.apk"
+    - "!**/*.aab"
+  path_instructions:
+    - path: "app/src/main/java/**/*.kt"
+      instructions: |
+        This is a minimal Android launcher in Kotlin. Flag lifecycle leaks,
+        main-thread I/O, missing runtime permission handling, and regressions
+        in home-screen behavior (app launching, wallpaper, gestures).
+    - path: "app/src/main/res/**/*.xml"
+      instructions: |
+        Check for hardcoded user-facing strings, missing translations, and
+        invalid layout or theme attributes.
+chat:
+  auto_reply: true
