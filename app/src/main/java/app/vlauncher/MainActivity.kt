@@ -41,6 +41,7 @@ import app.vlauncher.helper.openUrl
 import app.vlauncher.helper.rateApp
 import app.vlauncher.helper.resetLauncherViaFakeActivity
 import app.vlauncher.helper.setPlainWallpaper
+import app.vlauncher.helper.Icons
 import app.vlauncher.helper.shareApp
 import app.vlauncher.helper.showLauncherSelector
 import app.vlauncher.helper.showMessageDialog
@@ -108,6 +109,7 @@ class MainActivity : AppCompatActivity() {
 
         initObservers(viewModel)
         viewModel.getAppList()
+        Icons.warmUp(this)
         registerShortcutCallback()
         setupOrientation()
 
