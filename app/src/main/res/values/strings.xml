@@ -49,6 +49,13 @@
     <string name="swipe_up_for_apps">1. Swipe up for all apps\n2. Long press anywhere for settings</string>
     <string name="apps_on_home_screen">Apps on home screen</string>
     <string name="daily_wallpaper_update">Daily new wallpaper</string>
+    <string name="wallpaper_frequency">Frequency</string>
+    <string name="wallpaper_every_hour">Every hour</string>
+    <string name="wallpaper_every_3_hours">Every 3 hours</string>
+    <string name="wallpaper_every_6_hours">Every 6 hours</string>
+    <string name="wallpaper_every_12_hours">Every 12 hours</string>
+    <string name="wallpaper_daily">Daily</string>
+    <string name="wallpaper_weekly">Weekly</string>
     <string name="left">Left</string>
     <string name="right">Right</string>
     <string name="center">Center</string>

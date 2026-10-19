@@ -109,6 +109,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
             R.id.homeAppsNum -> showHomeAppsNumMenu(view)
             R.id.dailyWallpaperUrl -> requireContext().openUrl(prefs.dailyWallpaperUrl)
             R.id.dailyWallpaper -> toggleDailyWallpaperUpdate()
+            R.id.wallpaperFrequency -> showWallpaperFrequencyMenu(view)
             R.id.alignment -> showAlignmentMenu(view)
             R.id.statusBar -> toggleStatusBar()
             R.id.dateTime -> showDateTimeMenu(view)
@@ -163,6 +164,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         binding.screenTimeOnOff.setOnClickListener(this)
         binding.dailyWallpaperUrl.setOnClickListener(this)
         binding.dailyWallpaper.setOnClickListener(this)
+        binding.wallpaperFrequency.setOnClickListener(this)
         binding.alignment.setOnClickListener(this)
         binding.statusBar.setOnClickListener(this)
         binding.dateTime.setOnClickListener(this)
@@ -605,6 +607,35 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
     private fun populateWallpaperText() {
         if (prefs.dailyWallpaper) binding.dailyWallpaper.text = getString(R.string.on)
         else binding.dailyWallpaper.text = getString(R.string.off)
+        binding.wallpaperFrequencyRow.visibility = if (prefs.dailyWallpaper) View.VISIBLE else View.GONE
+        binding.wallpaperFrequency.text = frequencyLabel(prefs.wallpaperFrequency)
+    }
+
+    private fun frequencyLabel(hours: Int): String = getString(
+        when (hours) {
+            1 -> R.string.wallpaper_every_hour
+            3 -> R.string.wallpaper_every_3_hours
+            6 -> R.string.wallpaper_every_6_hours
+            12 -> R.string.wallpaper_every_12_hours
+            168 -> R.string.wallpaper_weekly
+            else -> R.string.wallpaper_daily
+        }
+    )
+
+    private fun showWallpaperFrequencyMenu(anchor: View) {
+        val options = listOf(1, 3, 6, 12, 24, 168)
+        anchor.showPopupMenu(configure = { menu ->
+            options.forEachIndexed { index, hours ->
+                menu.add(Menu.NONE, index, index, frequencyLabel(hours))
+            }
+        }) { item ->
+            val hours = options.getOrNull(item.itemId) ?: return@showPopupMenu
+            if (hours != prefs.wallpaperFrequency) {
+                prefs.wallpaperFrequency = hours
+                populateWallpaperText()
+                if (prefs.dailyWallpaper) viewModel.setWallpaperWorker()
+            }
+        }
     }
 
     private fun updateHomeBottomAlignment() {

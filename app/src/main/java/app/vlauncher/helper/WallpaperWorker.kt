@@ -18,12 +18,23 @@ class WallpaperWorker(appContext: Context, workerParams: WorkerParameters) : Cor
                 true
             else if (prefs.dailyWallpaper) {
                 val wallType = checkWallpaperType()
-                val wallpaperUrl = getTodaysWallpaper(wallType, prefs.firstOpenTime)
-                if (prefs.dailyWallpaperUrl == wallpaperUrl)
+                val (wallpaperUrl, nextCursor) = getTodaysWallpaper(
+                    wallType,
+                    prefs.firstOpenTime,
+                    prefs.wallpaperFrequency,
+                    prefs.wallpaperCursor,
+                )
+                if (prefs.dailyWallpaperUrl == wallpaperUrl) {
+                    // Same image; still move on so a repeated entry cannot stall the cycle.
+                    prefs.wallpaperCursor = nextCursor
                     true
-                else {
-                    prefs.dailyWallpaperUrl = wallpaperUrl
-                    setWallpaper(applicationContext, wallpaperUrl)
+                } else {
+                    val applied = setWallpaper(applicationContext, wallpaperUrl)
+                    if (applied) {
+                        prefs.wallpaperCursor = nextCursor
+                        prefs.dailyWallpaperUrl = wallpaperUrl
+                    }
+                    applied
                 }
             } else
                 true

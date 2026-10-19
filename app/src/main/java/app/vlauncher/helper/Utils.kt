@@ -418,18 +418,14 @@ fun getScreenDimensions(context: Context): Pair<Int, Int> {
     return Pair(point.x, point.y)
 }
 
-suspend fun getTodaysWallpaper(wallType: String, firstOpenTime: Long): String {
+suspend fun getTodaysWallpaper(
+    wallType: String,
+    firstOpenTime: Long,
+    frequencyHours: Int,
+    cursor: Int,
+): Pair<String, Int> {
     return withContext(Dispatchers.IO) {
-        var wallpaperUrl: String
         try {
-            val key = if (firstOpenTime.isDaySince() < 10)
-                String.format("0_%s", firstOpenTime.isDaySince().toString())
-            else {
-                val month = SimpleDateFormat("M", Locale.ENGLISH).format(Date()) ?: "0"
-                val day = SimpleDateFormat("d", Locale.ENGLISH).format(Date()) ?: "0"
-                String.format("%s_%s", month, day)
-            }
-
             val url = URL(Constants.URL_WALLPAPERS)
             val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
             connection.doInput = true
@@ -443,14 +439,23 @@ suspend fun getTodaysWallpaper(wallType: String, firstOpenTime: Long): String {
             }
 
             val json = JSONObject(stringBuffer.toString())
-            val wallpapers = json.getString(key)
-            val wallpapersJson = JSONObject(wallpapers)
-            wallpaperUrl = wallpapersJson.getString(wallType)
-            wallpaperUrl
-
+            if (WallpaperSelection.isDateKeyed(frequencyHours)) {
+                val month = SimpleDateFormat("M", Locale.ENGLISH).format(Date()).toIntOrNull() ?: 0
+                val day = SimpleDateFormat("d", Locale.ENGLISH).format(Date()).toIntOrNull() ?: 0
+                val key = WallpaperSelection.keyFor(firstOpenTime.isDaySince(), month, day)
+                json.getJSONObject(key).getString(wallType) to cursor
+            } else {
+                val urls = mutableListOf<String>()
+                val keys = json.keys()
+                while (keys.hasNext()) {
+                    val entry = json.optJSONObject(keys.next()) ?: continue
+                    val value = entry.optString(wallType)
+                    if (value.isNotEmpty()) urls.add(value)
+                }
+                WallpaperSelection.cursorUrl(urls, cursor) ?: (getBackupWallpaper(wallType) to cursor)
+            }
         } catch (e: Exception) {
-            wallpaperUrl = getBackupWallpaper(wallType)
-            wallpaperUrl
+            getBackupWallpaper(wallType) to cursor
         }
     }
 }
