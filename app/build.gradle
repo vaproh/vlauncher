@@ -14,11 +14,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "app.olauncher"
+        applicationId "app.vlauncher"
         minSdkVersion 24
         targetSdkVersion 36
-        versionCode 113
-        versionName "v6.9.17"
+        versionCode 1
+        versionName "v1.0.0"
 
         resourceConfigurations += ["en", "ar", "cs", "da", "de", "el", "es-rES", "es-rUS", "fi", "fr", "he", "hi", "hr", "hu", "in", "it", "ja", "ko", "nb", "nl", "pl", "pt-rBR", "ro", "ru-rRU", "sv", "th", "tr", "uk", "vi", "zh"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -45,7 +45,7 @@ android {
         includeInApk = false
         includeInBundle = true
     }
-    namespace 'app.olauncher'
+    namespace 'app.vlauncher'
 }
 
 dependencies {

@@ -58,6 +58,31 @@
         <item name="mainFontFamily">sans-serif</item>
     </style>
 
+    <!-- Font choices. Applied before the view hierarchy is inflated. -->
+    <style name="FontOverlayDefault">
+        <item name="mainFontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="FontOverlayMonospace">
+        <item name="mainFontFamily">monospace</item>
+    </style>
+
+    <style name="FontOverlayHack">
+        <item name="mainFontFamily">@font/hack</item>
+    </style>
+
+    <style name="FontOverlayJetBrainsMono">
+        <item name="mainFontFamily">@font/jetbrains_mono</item>
+    </style>
+
+    <style name="FontOverlayIosevka">
+        <item name="mainFontFamily">@font/iosevka</item>
+    </style>
+
+    <style name="FontOverlayInter">
+        <item name="mainFontFamily">@font/inter</item>
+    </style>
+
     <style name="WindowAnimationTransition">
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
@@ -75,6 +100,7 @@
     </style>
 
     <style name="TextDefault" parent="@android:style/TextAppearance.Large">
+        <item name="android:fontFamily">?attr/mainFontFamily</item>
         <item name="android:textColor">@drawable/text_colors_default</item>
         <item name="android:textColorHint">?attr/primaryColorTrans80</item>
         <item name="android:shadowColor">?attr/primaryTextShadowColor</item>
