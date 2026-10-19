@@ -42,6 +42,8 @@ class Prefs(context: Context) {
     private val FONT_FAMILY = "FONT_FAMILY"
     private val ICON_PACK = "ICON_PACK"
     private val SHOW_APP_ICONS = "SHOW_APP_ICONS"
+    private val SHOW_APP_ICONS_HOME = "SHOW_APP_ICONS_HOME"
+    private val SHOW_APP_ICONS_DRAWER = "SHOW_APP_ICONS_DRAWER"
     private val PRO_MESSAGE_SHOWN = "PRO_MESSAGE_SHOWN"
     private val HIDE_SET_DEFAULT_LAUNCHER = "HIDE_SET_DEFAULT_LAUNCHER"
     private val SCREEN_TIME_LAST_UPDATED = "SCREEN_TIME_LAST_UPDATED"
@@ -227,9 +229,18 @@ class Prefs(context: Context) {
         get() = prefs.getString(ICON_PACK, "").toString()
         set(value) = prefs.edit { putString(ICON_PACK, value).apply() }
 
-    var showAppIcons: Boolean
+    // Legacy single toggle, kept as the migration default for the split toggles below
+    private var showAppIcons: Boolean
         get() = prefs.getBoolean(SHOW_APP_ICONS, true)
         set(value) = prefs.edit { putBoolean(SHOW_APP_ICONS, value).apply() }
+
+    var showHomeAppIcons: Boolean
+        get() = prefs.getBoolean(SHOW_APP_ICONS_HOME, showAppIcons)
+        set(value) = prefs.edit { putBoolean(SHOW_APP_ICONS_HOME, value).apply() }
+
+    var showDrawerAppIcons: Boolean
+        get() = prefs.getBoolean(SHOW_APP_ICONS_DRAWER, showAppIcons)
+        set(value) = prefs.edit { putBoolean(SHOW_APP_ICONS_DRAWER, value).apply() }
 
     var proMessageShown: Boolean
         get() = prefs.getBoolean(PRO_MESSAGE_SHOWN, false)

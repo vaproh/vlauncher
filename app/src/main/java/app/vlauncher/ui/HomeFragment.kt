@@ -433,7 +433,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun setHomeAppIcon(textView: TextView, packageName: String, user: UserHandle, label: String) {
-        if (!prefs.showAppIcons) {
+        if (!prefs.showHomeAppIcons) {
             textView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
             return
         }

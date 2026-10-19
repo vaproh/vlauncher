@@ -150,7 +150,7 @@ class AppDrawerFragment : BaseFragment() {
         adapter = AppDrawerAdapter(
             flag,
             prefs.appLabelAlignment,
-            prefs.showAppIcons,
+            prefs.showDrawerAppIcons,
             appClickListener = { appModel ->
                 viewModel.selectedApp(appModel, flag)
                 if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)

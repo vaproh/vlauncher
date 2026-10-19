@@ -118,7 +118,8 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
             R.id.boldFont -> toggleBoldFont()
             R.id.fontFamily -> showFontMenu(view)
             R.id.iconPack -> showIconPackMenu(view)
-            R.id.appIcons -> toggleAppIcons()
+            R.id.appIconsHome -> toggleHomeAppIcons()
+            R.id.appIconsDrawer -> toggleDrawerAppIcons()
 
             R.id.swipeLeftApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_LEFT_APP)
             R.id.swipeRightApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_RIGHT_APP)
@@ -175,7 +176,8 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         binding.boldFont.setOnClickListener(this)
         binding.fontFamily.setOnClickListener(this)
         binding.iconPack.setOnClickListener(this)
-        binding.appIcons.setOnClickListener(this)
+        binding.appIconsHome.setOnClickListener(this)
+        binding.appIconsDrawer.setOnClickListener(this)
 
         binding.share.setOnClickListener(this)
         binding.github.setOnClickListener(this)
@@ -238,12 +240,17 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
             }
         ) { item ->
             when (item.itemId) {
-                R.id.alignmentLeft -> viewModel.updateHomeAlignment(Gravity.START)
-                R.id.alignmentCenter -> viewModel.updateHomeAlignment(Gravity.CENTER)
-                R.id.alignmentRight -> viewModel.updateHomeAlignment(Gravity.END)
+                R.id.alignmentLeft -> updateAppAlignment(Gravity.START)
+                R.id.alignmentCenter -> updateAppAlignment(Gravity.CENTER)
+                R.id.alignmentRight -> updateAppAlignment(Gravity.END)
                 R.id.alignmentBottom -> updateHomeBottomAlignment()
             }
         }
+    }
+
+    private fun updateAppAlignment(gravity: Int) {
+        viewModel.updateHomeAlignment(gravity)
+        prefs.appLabelAlignment = gravity
     }
 
     // "System" stays hidden unless the row is long pressed
@@ -581,15 +588,23 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
             ?: getString(R.string.icon_pack_system)
     }
 
-    private fun toggleAppIcons() {
-        prefs.showAppIcons = !prefs.showAppIcons
+    private fun toggleHomeAppIcons() {
+        prefs.showHomeAppIcons = !prefs.showHomeAppIcons
+        populateAppIcons()
+        requireActivity().recreate()
+    }
+
+    private fun toggleDrawerAppIcons() {
+        prefs.showDrawerAppIcons = !prefs.showDrawerAppIcons
         populateAppIcons()
         requireActivity().recreate()
     }
 
     private fun populateAppIcons() {
-        binding.appIcons.text = getString(if (prefs.showAppIcons) R.string.on else R.string.off)
-        binding.iconPackRow.visibility = if (prefs.showAppIcons) View.VISIBLE else View.GONE
+        binding.appIconsHome.text = getString(if (prefs.showHomeAppIcons) R.string.on else R.string.off)
+        binding.appIconsDrawer.text = getString(if (prefs.showDrawerAppIcons) R.string.on else R.string.off)
+        binding.iconPackRow.visibility =
+            if (prefs.showHomeAppIcons || prefs.showDrawerAppIcons) View.VISIBLE else View.GONE
     }
 
     private fun populateScreenTimeOnOff() {
