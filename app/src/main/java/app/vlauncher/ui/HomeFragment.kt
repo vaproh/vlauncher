@@ -73,6 +73,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     private var weatherJob: Job? = null
     private var weatherLoopJob: Job? = null
     private var weatherLoopMinutes = 0
+    private var weatherGeneration = 0L
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -304,28 +305,36 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         updateDateTimeLayoutVisibility()
     }
 
-    private fun refreshWeather() {
+    private fun refreshWeather(force: Boolean = false) {
         if (!prefs.weatherEnabled) {
             hideWeather()
             return
         }
         if (weatherLoopMinutes != prefs.weatherRefreshMinutes) scheduleWeatherLoop()
         val cached = Weather.readCached(prefs)
-        if (cached != null && !Weather.isStale(cached.updatedAt, maxAgeMinutes = prefs.weatherRefreshMinutes)) {
+        if (!force && cached != null && !Weather.isStale(cached.updatedAt, maxAgeMinutes = prefs.weatherRefreshMinutes)) {
             showWeather(cached)
             return
         }
         hideWeather()
         // An in-flight fetch for a previous location must not save over the new one.
         weatherJob?.cancel()
-
-        if (prefs.weatherLocationMode == Constants.Weather.MODE_CUSTOM) {
-            fetchWeather(prefs.weatherLatitude.toDouble(), prefs.weatherLongitude.toDouble())
-        } else {
-            val resolved = WeatherLocation.current(requireContext()) { latitude, longitude ->
-                if (view != null) fetchWeather(latitude, longitude)
+        val generation = ++weatherGeneration
+        weatherJob = viewLifecycleOwner.lifecycleScope.launch {
+            val appContext = requireContext().applicationContext
+            // Breezy needs no coordinates, so it is tried before resolving ours.
+            val breezy = withContext(Dispatchers.IO) { WeatherBreezy.fetch(appContext) }
+            if (breezy != null) {
+                saveReading(breezy)
+                return@launch
             }
-            if (!resolved) fetchWeather(null, null) // No coordinates available: Breezy-only attempt.
+            if (prefs.weatherLocationMode == Constants.Weather.MODE_CUSTOM) {
+                fetchOpenMeteo(prefs.weatherLatitude.toDouble(), prefs.weatherLongitude.toDouble())
+            } else {
+                WeatherLocation.current(requireContext()) { latitude, longitude ->
+                    if (view != null && generation == weatherGeneration) fetchOpenMeteo(latitude, longitude)
+                }
+            }
         }
     }
 
@@ -336,23 +345,24 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (true) {
                     delay(weatherLoopMinutes * 60_000L)
-                    refreshWeather()
+                    refreshWeather(force = true)
                 }
             }
         }
     }
 
-    private fun fetchWeather(latitude: Double?, longitude: Double?) {
+    private fun fetchOpenMeteo(latitude: Double, longitude: Double) {
         weatherJob = viewLifecycleOwner.lifecycleScope.launch {
-            val reading = withContext(Dispatchers.IO) {
-                WeatherBreezy.fetch(requireContext().applicationContext)
-                    ?: if (latitude != null && longitude != null) Weather.fetch(latitude, longitude) else null
-            } ?: return@launch
-            prefs.weatherTemperature = reading.temperature
-            prefs.weatherLabel = reading.label
-            prefs.weatherUpdatedAt = reading.updatedAt
-            showWeather(reading)
+            val reading = withContext(Dispatchers.IO) { Weather.fetch(latitude, longitude) }
+            if (reading != null) saveReading(reading)
         }
+    }
+
+    private fun saveReading(reading: WeatherReading) {
+        prefs.weatherTemperature = reading.temperature
+        prefs.weatherLabel = reading.label
+        prefs.weatherUpdatedAt = reading.updatedAt
+        showWeather(reading)
     }
 
     private fun showWeather(reading: WeatherReading) {
@@ -827,6 +837,9 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
 
     override fun onDestroyView() {
         super.onDestroyView()
+        weatherLoopJob?.cancel()
+        weatherLoopJob = null
+        weatherLoopMinutes = 0
         _binding = null
     }
 }

@@ -174,20 +174,19 @@ object WeatherBreezy {
 }
 
 object WeatherLocation {
-    /** Returns false when no coordinates can be resolved (missing permission or no provider). */
-    fun current(context: Context, onLocation: (Double, Double) -> Unit): Boolean {
+    fun current(context: Context, onLocation: (Double, Double) -> Unit) {
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) return false
+        ) return
 
-        val manager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return false
+        val manager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return
         // Before S, GPS_PROVIDER requires ACCESS_FINE_LOCATION; coarse-only apps must use NETWORK.
         val candidates = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             listOf(LocationManager.FUSED_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER)
         else listOf(LocationManager.NETWORK_PROVIDER)
-        val provider = candidates.firstOrNull { manager.isProviderEnabled(it) } ?: return false
+        val provider = candidates.firstOrNull { manager.isProviderEnabled(it) } ?: return
         val lastKnown = lastKnown(manager)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -197,7 +196,6 @@ object WeatherLocation {
         } else {
             requestSingleUpdate(manager, provider, onLocation)
         }
-        return true
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
