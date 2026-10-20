@@ -191,4 +191,24 @@
     <string name="app_icons_drawer">Drawer icons</string>
     <string name="icon_pack">Icon pack</string>
     <string name="icon_pack_system">System</string>
+    <string name="weather">Weather</string>
+    <string name="weather_location">Weather location</string>
+    <string name="weather_location_device">Device location</string>
+    <string name="weather_location_custom">Custom location</string>
+    <string name="weather_city_title">Weather location</string>
+    <string name="weather_city_hint">City name</string>
+    <string name="weather_search">Search</string>
+    <string name="weather_city_not_found">City not found</string>
+    <string name="weather_location_set">Weather location set to %1$s</string>
+    <string name="weather_location_permission_needed">Location permission is needed for device weather</string>
+    <string name="weather_source_breezy">Breezy Weather</string>
+    <string name="weather_unit">Temperature unit</string>
+    <string name="weather_unit_c">Celsius (°C)</string>
+    <string name="weather_unit_f">Fahrenheit (°F)</string>
+    <string name="weather_refresh">Refresh interval</string>
+    <string name="weather_refresh_30m">Every 30 minutes</string>
+    <string name="weather_refresh_1h">Every hour</string>
+    <string name="weather_refresh_3h">Every 3 hours</string>
+    <string name="weather_refresh_6h">Every 6 hours</string>
+    <string name="weather_refresh_12h">Every 12 hours</string>
 </resources>

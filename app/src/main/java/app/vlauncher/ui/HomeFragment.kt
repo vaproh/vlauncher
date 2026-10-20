@@ -24,6 +24,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import app.vlauncher.MainViewModel
 import app.vlauncher.R
@@ -44,8 +45,16 @@ import app.vlauncher.helper.openCameraApp
 import app.vlauncher.helper.openDialerApp
 import app.vlauncher.helper.setPlainWallpaperByTheme
 import app.vlauncher.helper.showToast
+import app.vlauncher.helper.Weather
+import app.vlauncher.helper.WeatherBreezy
+import app.vlauncher.helper.WeatherLocation
+import app.vlauncher.helper.WeatherReading
 import app.vlauncher.listener.OnSwipeTouchListener
 import app.vlauncher.listener.ViewSwipeTouchListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -58,6 +67,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private var weatherJob: Job? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -286,6 +296,63 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
                 dateText = getString(R.string.day_battery, dateText, battery)
         }
         binding.date.text = dateText.replace(".,", ",")
+        updateDateTimeLayoutVisibility()
+    }
+
+    private fun refreshWeather() {
+        if (!prefs.weatherEnabled) {
+            hideWeather()
+            return
+        }
+        val cached = Weather.readCached(prefs)
+        if (cached != null && !Weather.isStale(cached.updatedAt, maxAgeMinutes = prefs.weatherRefreshMinutes)) {
+            showWeather(cached)
+            return
+        }
+        hideWeather()
+        if (weatherJob?.isActive == true) return
+
+        if (prefs.weatherLocationMode == Constants.Weather.MODE_CUSTOM || WeatherBreezy.isActive(requireContext().applicationContext)) {
+            // Breezy Weather owns its own location; our location only feeds the Open-Meteo fallback.
+            val custom = prefs.weatherLocationMode == Constants.Weather.MODE_CUSTOM
+            fetchWeather(
+                if (custom) prefs.weatherLatitude.toDouble() else null,
+                if (custom) prefs.weatherLongitude.toDouble() else null,
+            )
+        } else {
+            WeatherLocation.current(requireContext()) { latitude, longitude ->
+                if (view != null) fetchWeather(latitude, longitude)
+            }
+        }
+    }
+
+    private fun fetchWeather(latitude: Double?, longitude: Double?) {
+        weatherJob = viewLifecycleOwner.lifecycleScope.launch {
+            val reading = withContext(Dispatchers.IO) {
+                WeatherBreezy.fetch(requireContext().applicationContext)
+                    ?: if (latitude != null && longitude != null) Weather.fetch(latitude, longitude) else null
+            } ?: return@launch
+            prefs.weatherTemperature = reading.temperature
+            prefs.weatherLabel = reading.label
+            prefs.weatherUpdatedAt = reading.updatedAt
+            showWeather(reading)
+        }
+    }
+
+    private fun showWeather(reading: WeatherReading) {
+        binding.tvWeather.text = Weather.format(reading, prefs.weatherUnit)
+        binding.tvWeather.isVisible = true
+        updateDateTimeLayoutVisibility()
+    }
+
+    private fun hideWeather() {
+        binding.tvWeather.isVisible = false
+        updateDateTimeLayoutVisibility()
+    }
+
+    private fun updateDateTimeLayoutVisibility() {
+        binding.dateTimeLayout.isVisible =
+            prefs.dateTimeVisibility != Constants.DateTime.OFF || binding.tvWeather.isVisible
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -318,6 +385,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     private fun populateHomeScreen(appCountUpdated: Boolean) {
         if (appCountUpdated) hideHomeApps()
         populateDateTime()
+        refreshWeather()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             populateScreenTime()
