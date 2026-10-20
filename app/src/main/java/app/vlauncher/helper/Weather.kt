@@ -174,6 +174,8 @@ object WeatherBreezy {
 }
 
 object WeatherLocation {
+    private const val LAST_KNOWN_MAX_AGE_MS = 10 * 60 * 1000L
+
     fun current(context: Context, onLocation: (Double, Double) -> Unit) {
         if (ContextCompat.checkSelfPermission(
                 context,
@@ -191,7 +193,7 @@ object WeatherLocation {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             currentLocation(manager, provider, lastKnown, context.mainExecutor, onLocation)
-        } else if (lastKnown != null) {
+        } else if (lastKnown != null && System.currentTimeMillis() - lastKnown.time <= LAST_KNOWN_MAX_AGE_MS) {
             onLocation(lastKnown.latitude, lastKnown.longitude)
         } else {
             requestSingleUpdate(manager, provider, onLocation)
@@ -248,10 +250,13 @@ object WeatherLocation {
     @Suppress("MissingPermission")
     private fun lastKnown(manager: LocationManager): Location? {
         return listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER)
+            .filter { manager.allProviders.contains(it) }
             .mapNotNull { provider ->
                 try {
                     manager.getLastKnownLocation(provider)
                 } catch (_: SecurityException) {
+                    null
+                } catch (_: IllegalArgumentException) {
                     null
                 }
             }
