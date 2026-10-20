@@ -313,7 +313,8 @@ class AppDrawerAdapter(
                 }
             }
             etAppRename.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-                setRowContentVisible(!hasFocus)
+                // Keep content hidden while the rename overlay is still open, even on focus loss.
+                setRowContentVisible(!hasFocus && renameLayout.visibility != View.VISIBLE)
             }
             etAppRename.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -338,6 +339,7 @@ class AppDrawerAdapter(
                     if (renameLabel.isNotBlank() && appModel.appPackage.isNotBlank()) {
                         appRenameListener(appModel, renameLabel)
                         renameLayout.visibility = View.GONE
+                        setRowContentVisible(true)
                     }
                     true
                 }
@@ -349,12 +351,14 @@ class AppDrawerAdapter(
                 if (renameLabel.isNotBlank() && appModel.appPackage.isNotBlank()) {
                     appRenameListener(appModel, renameLabel)
                     renameLayout.visibility = View.GONE
+                    setRowContentVisible(true)
                 } else {
                     appRenameListener(
                         appModel,
                         getAppName(etAppRename.context, appModel.appPackage, appModel.user)
                     )
                     renameLayout.visibility = View.GONE
+                    setRowContentVisible(true)
                 }
             }
             appInfo.setOnClickListener { appInfoListener(appModel) }
