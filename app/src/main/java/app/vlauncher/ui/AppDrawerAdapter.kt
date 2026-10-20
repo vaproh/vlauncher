@@ -238,6 +238,15 @@ class AppDrawerAdapter(
             appHideListener: (AppModel, Int) -> Unit,
             appRenameListener: (AppModel, String) -> Unit,
         ) = with(binding) {
+            fun setRowContentVisible(visible: Boolean) {
+                appTitle.visibility = if (visible) View.VISIBLE else View.INVISIBLE
+                appIcon.visibility = when {
+                    !showIcons || appModel.appPackage.isEmpty() -> View.GONE
+                    visible -> View.VISIBLE
+                    else -> View.INVISIBLE
+                }
+            }
+
             appHideLayout.visibility = View.GONE
             renameLayout.visibility = View.GONE
             appTitle.visibility = View.VISIBLE
@@ -278,7 +287,7 @@ class AppDrawerAdapter(
                         root.context.getString(R.string.adapter_show)
                     else
                         root.context.getString(R.string.adapter_hide)
-                    appTitle.visibility = View.INVISIBLE
+                    setRowContentVisible(false)
                     appHide.alpha = when (appModel is AppModel.PinnedShortcut) {
                         true -> 0.5f
                         false -> 1.0f
@@ -298,12 +307,13 @@ class AppDrawerAdapter(
                     etAppRename.setSelectAllOnFocus(true)
                     renameLayout.visibility = View.VISIBLE
                     appHideLayout.visibility = View.GONE
+                    setRowContentVisible(false)
                     etAppRename.showKeyboard()
                     etAppRename.imeOptions = EditorInfo.IME_ACTION_DONE
                 }
             }
             etAppRename.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-                appTitle.visibility = if (hasFocus) View.INVISIBLE else View.VISIBLE
+                setRowContentVisible(!hasFocus)
             }
             etAppRename.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -351,11 +361,11 @@ class AppDrawerAdapter(
             appDelete.setOnClickListener { appDeleteListener(appModel) }
             appMenuClose.setOnClickListener {
                 appHideLayout.visibility = View.GONE
-                appTitle.visibility = View.VISIBLE
+                setRowContentVisible(true)
             }
             appRenameClose.setOnClickListener {
                 renameLayout.visibility = View.GONE
-                appTitle.visibility = View.VISIBLE
+                setRowContentVisible(true)
             }
             appHide.setOnClickListener { appHideListener(appModel, bindingAdapterPosition) }
         }
