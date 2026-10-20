@@ -31,6 +31,7 @@ No ads, no telemetry, no analytics.
 - Export / import settings
 - Better app suggestions (configurable): recent or frequently used on top
 - Exclude apps from suggestions
+- Home app list vertical position: top, middle, or bottom
 
 ## Download
 
