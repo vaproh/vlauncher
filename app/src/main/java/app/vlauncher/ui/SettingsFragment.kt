@@ -1,9 +1,11 @@
 package app.vlauncher.ui
 
 import android.app.admin.DevicePolicyManager
+import android.Manifest
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
@@ -15,8 +17,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import app.vlauncher.BuildConfig
 import app.vlauncher.MainViewModel
@@ -24,6 +29,7 @@ import app.vlauncher.R
 import app.vlauncher.data.Constants
 import app.vlauncher.data.Prefs
 import app.vlauncher.databinding.DialogTextSizeBinding
+import app.vlauncher.databinding.DialogWeatherCityBinding
 import app.vlauncher.databinding.FragmentSettingsBinding
 import app.vlauncher.helper.appUsagePermissionGranted
 import app.vlauncher.helper.createDialog
@@ -44,7 +50,12 @@ import app.vlauncher.helper.Icons
 import app.vlauncher.helper.showPopupMenu
 import app.vlauncher.helper.showStatusBar
 import app.vlauncher.helper.showToast
+import app.vlauncher.helper.Weather
+import app.vlauncher.helper.WeatherBreezy
 import app.vlauncher.listener.DeviceAdmin
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListener {
 
@@ -56,6 +67,10 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
     private var dialog: OlDialog? = null
+
+    companion object {
+        private const val REQUEST_CODE_WEATHER_LOCATION = 1001
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
@@ -90,6 +105,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         populateAlignment()
         populateStatusBar()
         populateDateTime()
+        populateWeather()
         populateSwipeApps()
         populateActionHints()
         initClickListeners()
@@ -113,6 +129,10 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
             R.id.alignment -> showAlignmentMenu(view)
             R.id.statusBar -> toggleStatusBar()
             R.id.dateTime -> showDateTimeMenu(view)
+            R.id.weatherOnOff -> toggleWeather()
+            R.id.weatherLocation -> showWeatherLocationMenu(view)
+            R.id.weatherUnit -> showWeatherUnitMenu(view)
+            R.id.weatherRefresh -> showWeatherRefreshMenu(view)
             R.id.appThemeText -> showAppThemeMenu(view, showSystem = false)
             R.id.textSizeValue -> showTextSizeDialog()
             R.id.boldFont -> toggleBoldFont()
@@ -169,6 +189,10 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         binding.alignment.setOnClickListener(this)
         binding.statusBar.setOnClickListener(this)
         binding.dateTime.setOnClickListener(this)
+        binding.weatherOnOff.setOnClickListener(this)
+        binding.weatherLocation.setOnClickListener(this)
+        binding.weatherUnit.setOnClickListener(this)
+        binding.weatherRefresh.setOnClickListener(this)
         binding.swipeLeftApp.setOnClickListener(this)
         binding.swipeRightApp.setOnClickListener(this)
         binding.appThemeText.setOnClickListener(this)
@@ -355,6 +379,148 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
                 else -> R.string.off
             }
         )
+    }
+
+    private fun populateWeather() {
+        binding.weatherOnOff.text = getString(if (prefs.weatherEnabled) R.string.on else R.string.off)
+        binding.weatherLocationRow.isVisible = prefs.weatherEnabled
+        binding.weatherUnitRow.isVisible = prefs.weatherEnabled
+        binding.weatherRefreshRow.isVisible = prefs.weatherEnabled
+        binding.weatherLocation.text = when {
+            WeatherBreezy.isActive(requireContext()) -> getString(R.string.weather_source_breezy)
+            prefs.weatherLocationMode == Constants.Weather.MODE_CUSTOM ->
+                prefs.weatherCityName.ifBlank { getString(R.string.weather_location_custom) }
+            else -> getString(R.string.weather_location_device)
+        }
+        binding.weatherUnit.text =
+            getString(if (prefs.weatherUnit == Constants.Weather.UNIT_FAHRENHEIT) R.string.weather_unit_f else R.string.weather_unit_c)
+        binding.weatherRefresh.text = getString(
+            when (prefs.weatherRefreshMinutes) {
+                30 -> R.string.weather_refresh_30m
+                180 -> R.string.weather_refresh_3h
+                360 -> R.string.weather_refresh_6h
+                720 -> R.string.weather_refresh_12h
+                else -> R.string.weather_refresh_1h
+            }
+        )
+    }
+
+    private fun toggleWeather() {
+        prefs.weatherEnabled = !prefs.weatherEnabled
+        if (prefs.weatherEnabled) requestWeatherPermissions()
+        populateWeather()
+        viewModel.refreshHome(false)
+    }
+
+    private fun showWeatherLocationMenu(anchor: View) {
+        anchor.showPopupMenu(configure = { menu ->
+            menu.add(Menu.NONE, 0, 0, getString(R.string.weather_location_device))
+            menu.add(Menu.NONE, 1, 1, getString(R.string.weather_location_custom))
+        }) { item ->
+            when (item.itemId) {
+                0 -> {
+                    prefs.weatherLocationMode = Constants.Weather.MODE_DEVICE
+                    prefs.weatherUpdatedAt = 0L
+                    populateWeather()
+                    requestWeatherPermissions()
+                    viewModel.refreshHome(false)
+                }
+
+                1 -> showWeatherCityDialog()
+            }
+        }
+    }
+
+    private fun showWeatherUnitMenu(anchor: View) {
+        anchor.showPopupMenu(configure = { menu ->
+            menu.add(Menu.NONE, 0, 0, getString(R.string.weather_unit_c))
+            menu.add(Menu.NONE, 1, 1, getString(R.string.weather_unit_f))
+        }) { item ->
+            prefs.weatherUnit =
+                if (item.itemId == 1) Constants.Weather.UNIT_FAHRENHEIT else Constants.Weather.UNIT_CELSIUS
+            populateWeather()
+            viewModel.refreshHome(false)
+        }
+    }
+
+    private fun showWeatherRefreshMenu(anchor: View) {
+        val minutes = listOf(30, 60, 180, 360, 720)
+        val labels = listOf(
+            R.string.weather_refresh_30m,
+            R.string.weather_refresh_1h,
+            R.string.weather_refresh_3h,
+            R.string.weather_refresh_6h,
+            R.string.weather_refresh_12h,
+        )
+        anchor.showPopupMenu(configure = { menu ->
+            minutes.forEachIndexed { i, m -> menu.add(Menu.NONE, i, i, getString(labels[i])) }
+        }) { item ->
+            prefs.weatherRefreshMinutes = minutes[item.itemId]
+            populateWeather()
+            viewModel.refreshHome(false)
+        }
+    }
+
+    private fun showWeatherCityDialog() {
+        var input: DialogWeatherCityBinding? = null
+        showDialog(
+            requireContext().createDialog(
+                title = R.string.weather_city_title,
+                action = R.string.weather_search,
+                content = { container ->
+                    DialogWeatherCityBinding.inflate(layoutInflater, container, false)
+                        .also { input = it }.root
+                },
+                onAction = {
+                    val name = input?.cityInput?.text?.toString()?.trim().orEmpty()
+                    if (name.isEmpty()) requireContext().showToast(R.string.weather_city_not_found)
+                    else searchCity(name)
+                },
+            )
+        )
+    }
+
+    private fun searchCity(name: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val city = withContext(Dispatchers.IO) { Weather.searchCity(name) }
+            if (city == null) {
+                requireContext().showToast(R.string.weather_city_not_found)
+                return@launch
+            }
+            prefs.weatherLocationMode = Constants.Weather.MODE_CUSTOM
+            prefs.weatherCityName = city.name
+            prefs.weatherLatitude = city.latitude.toFloat()
+            prefs.weatherLongitude = city.longitude.toFloat()
+            prefs.weatherUpdatedAt = 0L
+            populateWeather()
+            viewModel.refreshHome(false)
+            requireContext().showToast(getString(R.string.weather_location_set, city.name))
+        }
+    }
+
+    private fun requestWeatherPermissions() {
+        val wanted = mutableListOf<String>()
+        if (prefs.weatherLocationMode == Constants.Weather.MODE_DEVICE)
+            wanted.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (WeatherBreezy.installedPackage(requireContext()) != null)
+            wanted.add(WeatherBreezy.READ_PERMISSION)
+        val missing = wanted.filter {
+            ContextCompat.checkSelfPermission(requireContext(), it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (missing.isNotEmpty())
+            requestPermissions(missing.toTypedArray(), REQUEST_CODE_WEATHER_LOCATION)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != REQUEST_CODE_WEATHER_LOCATION) return
+        if (grantResults.firstOrNull() != PackageManager.PERMISSION_GRANTED)
+            requireContext().showToast(R.string.weather_location_permission_needed)
+        viewModel.refreshHome(false)
     }
 
     private fun showHiddenApps() {

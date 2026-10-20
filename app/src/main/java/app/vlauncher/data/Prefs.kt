@@ -46,6 +46,16 @@ class Prefs(context: Context) {
     private val SHOW_APP_ICONS_DRAWER = "SHOW_APP_ICONS_DRAWER"
     private val PRO_MESSAGE_SHOWN = "PRO_MESSAGE_SHOWN"
     private val HIDE_SET_DEFAULT_LAUNCHER = "HIDE_SET_DEFAULT_LAUNCHER"
+    private val WEATHER_ENABLED = "WEATHER_ENABLED"
+    private val WEATHER_LOCATION_MODE = "WEATHER_LOCATION_MODE"
+    private val WEATHER_CITY_NAME = "WEATHER_CITY_NAME"
+    private val WEATHER_LATITUDE = "WEATHER_LATITUDE"
+    private val WEATHER_LONGITUDE = "WEATHER_LONGITUDE"
+    private val WEATHER_TEMPERATURE = "WEATHER_TEMPERATURE"
+    private val WEATHER_LABEL = "WEATHER_LABEL"
+    private val WEATHER_UPDATED_AT = "WEATHER_UPDATED_AT"
+    private val WEATHER_UNIT = "WEATHER_UNIT"
+    private val WEATHER_REFRESH_MINUTES = "WEATHER_REFRESH_MINUTES"
     private val SCREEN_TIME_LAST_UPDATED = "SCREEN_TIME_LAST_UPDATED"
     private val LAUNCHER_RESTART_TIMESTAMP = "LAUNCHER_RECREATE_TIMESTAMP"
     private val SHOWN_ON_DAY_OF_YEAR = "SHOWN_ON_DAY_OF_YEAR"
@@ -199,6 +209,46 @@ class Prefs(context: Context) {
     var dateTimeVisibility: Int
         get() = prefs.getInt(DATE_TIME_VISIBILITY, Constants.DateTime.ON)
         set(value) = prefs.edit { putInt(DATE_TIME_VISIBILITY, value).apply() }
+
+    var weatherEnabled: Boolean
+        get() = prefs.getBoolean(WEATHER_ENABLED, false)
+        set(value) = prefs.edit { putBoolean(WEATHER_ENABLED, value).apply() }
+
+    var weatherLocationMode: String
+        get() = prefs.getString(WEATHER_LOCATION_MODE, Constants.Weather.MODE_DEVICE).toString()
+        set(value) = prefs.edit { putString(WEATHER_LOCATION_MODE, value).apply() }
+
+    var weatherCityName: String
+        get() = prefs.getString(WEATHER_CITY_NAME, "").toString()
+        set(value) = prefs.edit { putString(WEATHER_CITY_NAME, value).apply() }
+
+    var weatherLatitude: Float
+        get() = prefs.getFloat(WEATHER_LATITUDE, 0f)
+        set(value) = prefs.edit { putFloat(WEATHER_LATITUDE, value).apply() }
+
+    var weatherLongitude: Float
+        get() = prefs.getFloat(WEATHER_LONGITUDE, 0f)
+        set(value) = prefs.edit { putFloat(WEATHER_LONGITUDE, value).apply() }
+
+    var weatherTemperature: Int
+        get() = prefs.getInt(WEATHER_TEMPERATURE, 0)
+        set(value) = prefs.edit { putInt(WEATHER_TEMPERATURE, value).apply() }
+
+    var weatherLabel: String
+        get() = prefs.getString(WEATHER_LABEL, "").toString()
+        set(value) = prefs.edit { putString(WEATHER_LABEL, value).apply() }
+
+    var weatherUpdatedAt: Long
+        get() = prefs.getLong(WEATHER_UPDATED_AT, 0L)
+        set(value) = prefs.edit { putLong(WEATHER_UPDATED_AT, value).apply() }
+
+    var weatherUnit: String
+        get() = prefs.getString(WEATHER_UNIT, Constants.Weather.UNIT_CELSIUS).toString()
+        set(value) = prefs.edit { putString(WEATHER_UNIT, value).apply() }
+
+    var weatherRefreshMinutes: Int
+        get() = prefs.getInt(WEATHER_REFRESH_MINUTES, 60)
+        set(value) = prefs.edit { putInt(WEATHER_REFRESH_MINUTES, value).apply() }
 
     var swipeLeftEnabled: Boolean
         get() = prefs.getBoolean(SWIPE_LEFT_ENABLED, true)

@@ -46,6 +46,13 @@ object Constants {
         const val HIDE = 101
     }
 
+    object Weather {
+        const val MODE_DEVICE = "device"
+        const val MODE_CUSTOM = "custom"
+        const val UNIT_CELSIUS = "c"
+        const val UNIT_FAHRENHEIT = "f"
+    }
+
     val CLOCK_APP_PACKAGES = arrayOf(
         "com.google.android.deskclock", //Google Clock
         "com.sec.android.app.clockpackage", //Samsung Clock

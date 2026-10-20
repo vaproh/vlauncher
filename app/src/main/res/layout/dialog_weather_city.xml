@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatEditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cityInput"
+    style="@style/TextLarge"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:background="@null"
+    android:hint="@string/weather_city_hint"
+    android:imeOptions="actionSearch"
+    android:inputType="textCapWords"
+    android:maxLength="60"
+    android:maxLines="1"
+    android:paddingVertical="12dp"
+    android:textColorHint="?attr/primaryColorTrans50" />
