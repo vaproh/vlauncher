@@ -13,7 +13,16 @@ No ads, no telemetry, no analytics.
 - **Icon pack support** - app drawer icons resolve from installed icon packs
 - **Home screen icons** - optional app icons on the home screen, with a toggle
 - **Wallpaper rotation** - configurable change frequency
+- **Weather line** - optional temperature + condition under the clock; uses
+  [Breezy Weather](https://github.com/breezy-weather/breezy-weather)'s shared
+  data when installed, otherwise Open-Meteo (keyless) with device location or a
+  custom city; Celsius/Fahrenheit and refresh interval settings
 - Swipe gestures and long-press actions for fast navigation
+
+## Todo
+
+- Font previews inside the font selection menu (each option rendered in its own typeface)
+- Tapping the weather line opens Breezy Weather (or the appropriate weather app)
 
 ## Download
 
