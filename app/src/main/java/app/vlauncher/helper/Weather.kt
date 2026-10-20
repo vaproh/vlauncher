@@ -174,24 +174,30 @@ object WeatherBreezy {
 }
 
 object WeatherLocation {
-    fun current(context: Context, onLocation: (Double, Double) -> Unit) {
+    /** Returns false when no coordinates can be resolved (missing permission or no provider). */
+    fun current(context: Context, onLocation: (Double, Double) -> Unit): Boolean {
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) return
+        ) return false
 
-        val manager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return
-        val provider = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
-            .firstOrNull { manager.isProviderEnabled(it) } ?: return
+        val manager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return false
+        // Before S, GPS_PROVIDER requires ACCESS_FINE_LOCATION; coarse-only apps must use NETWORK.
+        val candidates = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            listOf(LocationManager.FUSED_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER)
+        else listOf(LocationManager.NETWORK_PROVIDER)
+        val provider = candidates.firstOrNull { manager.isProviderEnabled(it) } ?: return false
         val lastKnown = lastKnown(manager)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             currentLocation(manager, provider, lastKnown, context.mainExecutor, onLocation)
+        } else if (lastKnown != null) {
+            onLocation(lastKnown.latitude, lastKnown.longitude)
         } else {
-            lastKnown?.let { onLocation(it.latitude, it.longitude) }
             requestSingleUpdate(manager, provider, onLocation)
         }
+        return true
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -218,20 +224,24 @@ object WeatherLocation {
         provider: String,
         onLocation: (Double, Double) -> Unit,
     ) {
+        val listener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                manager.removeUpdates(this)
+                onLocation(location.latitude, location.longitude)
+            }
+
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
+            override fun onProviderEnabled(provider: String) = Unit
+            override fun onProviderDisabled(provider: String) = Unit
+        }
         try {
             manager.requestSingleUpdate(
                 provider,
-                object : LocationListener {
-                    override fun onLocationChanged(location: Location) {
-                        onLocation(location.latitude, location.longitude)
-                    }
-
-                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
-                    override fun onProviderEnabled(provider: String) = Unit
-                    override fun onProviderDisabled(provider: String) = Unit
-                },
+                listener,
                 Looper.getMainLooper(),
             )
+            // Never leave a listener registered when no fix arrives (e.g. indoors).
+            android.os.Handler(Looper.getMainLooper()).postDelayed({ manager.removeUpdates(listener) }, 30_000L)
         } catch (e: SecurityException) {
             e.printStackTrace()
         }
@@ -239,12 +249,14 @@ object WeatherLocation {
 
     @Suppress("MissingPermission")
     private fun lastKnown(manager: LocationManager): Location? {
-        return try {
-            listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
-                .mapNotNull { manager.getLastKnownLocation(it) }
-                .maxByOrNull { it.time }
-        } catch (e: SecurityException) {
-            null
-        }
+        return listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER)
+            .mapNotNull { provider ->
+                try {
+                    manager.getLastKnownLocation(provider)
+                } catch (_: SecurityException) {
+                    null
+                }
+            }
+            .maxByOrNull { it.time }
     }
 }

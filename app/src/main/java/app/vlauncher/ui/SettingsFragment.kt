@@ -415,7 +415,9 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
     private fun showWeatherLocationMenu(anchor: View) {
         anchor.showPopupMenu(configure = { menu ->
             menu.add(Menu.NONE, 0, 0, getString(R.string.weather_location_device))
-            menu.add(Menu.NONE, 1, 1, getString(R.string.weather_location_custom))
+            // Breezy owns the location while it is the active source.
+            if (!WeatherBreezy.isActive(requireContext()))
+                menu.add(Menu.NONE, 1, 1, getString(R.string.weather_location_custom))
         }) { item ->
             when (item.itemId) {
                 0 -> {
@@ -518,7 +520,8 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode != REQUEST_CODE_WEATHER_LOCATION) return
-        if (grantResults.firstOrNull() != PackageManager.PERMISSION_GRANTED)
+        val locationIndex = permissions.indexOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (locationIndex >= 0 && grantResults.getOrNull(locationIndex) != PackageManager.PERMISSION_GRANTED)
             requireContext().showToast(R.string.weather_location_permission_needed)
         viewModel.refreshHome(false)
     }

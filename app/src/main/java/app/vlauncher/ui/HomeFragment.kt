@@ -24,7 +24,9 @@ import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import app.vlauncher.MainViewModel
 import app.vlauncher.R
@@ -53,6 +55,7 @@ import app.vlauncher.listener.OnSwipeTouchListener
 import app.vlauncher.listener.ViewSwipeTouchListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -68,6 +71,8 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private var weatherJob: Job? = null
+    private var weatherLoopJob: Job? = null
+    private var weatherLoopMinutes = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -304,24 +309,35 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             hideWeather()
             return
         }
+        if (weatherLoopMinutes != prefs.weatherRefreshMinutes) scheduleWeatherLoop()
         val cached = Weather.readCached(prefs)
         if (cached != null && !Weather.isStale(cached.updatedAt, maxAgeMinutes = prefs.weatherRefreshMinutes)) {
             showWeather(cached)
             return
         }
         hideWeather()
-        if (weatherJob?.isActive == true) return
+        // An in-flight fetch for a previous location must not save over the new one.
+        weatherJob?.cancel()
 
-        if (prefs.weatherLocationMode == Constants.Weather.MODE_CUSTOM || WeatherBreezy.isActive(requireContext().applicationContext)) {
-            // Breezy Weather owns its own location; our location only feeds the Open-Meteo fallback.
-            val custom = prefs.weatherLocationMode == Constants.Weather.MODE_CUSTOM
-            fetchWeather(
-                if (custom) prefs.weatherLatitude.toDouble() else null,
-                if (custom) prefs.weatherLongitude.toDouble() else null,
-            )
+        if (prefs.weatherLocationMode == Constants.Weather.MODE_CUSTOM) {
+            fetchWeather(prefs.weatherLatitude.toDouble(), prefs.weatherLongitude.toDouble())
         } else {
-            WeatherLocation.current(requireContext()) { latitude, longitude ->
+            val resolved = WeatherLocation.current(requireContext()) { latitude, longitude ->
                 if (view != null) fetchWeather(latitude, longitude)
+            }
+            if (!resolved) fetchWeather(null, null) // No coordinates available: Breezy-only attempt.
+        }
+    }
+
+    private fun scheduleWeatherLoop() {
+        weatherLoopJob?.cancel()
+        weatherLoopMinutes = prefs.weatherRefreshMinutes
+        weatherLoopJob = viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (true) {
+                    delay(weatherLoopMinutes * 60_000L)
+                    refreshWeather()
+                }
             }
         }
     }
