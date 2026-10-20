@@ -21,8 +21,16 @@ No ads, no telemetry, no analytics.
 
 ## Todo
 
-- Font previews inside the font selection menu (each option rendered in its own typeface)
+- Font previews in picker
+- Icon shape and size options
 - Tapping the weather line opens Breezy Weather (or the appropriate weather app)
+- OTA updates: the launcher checks for its own updates, notifies, and can update directly from within the launcher
+- Fuzzy app search
+- App aliases
+- Drawer search prompt: shows `> _`, and while typing `> example`
+- Export / import settings
+- Better app suggestions (configurable): recent or frequently used on top
+- Exclude apps from suggestions
 
 ## Download
 
