@@ -24,6 +24,7 @@ class Prefs(context: Context) {
     private val WALLPAPER_CURSOR = "WALLPAPER_CURSOR"
     private val HOME_ALIGNMENT = "HOME_ALIGNMENT"
     private val HOME_BOTTOM_ALIGNMENT = "HOME_BOTTOM_ALIGNMENT"
+    private val HOME_VERTICAL_ALIGNMENT = "HOME_VERTICAL_ALIGNMENT"
     private val APP_LABEL_ALIGNMENT = "APP_LABEL_ALIGNMENT"
     private val STATUS_BAR = "STATUS_BAR"
     private val DATE_TIME_VISIBILITY = "DATE_TIME_VISIBILITY"
@@ -56,6 +57,7 @@ class Prefs(context: Context) {
     private val WEATHER_UPDATED_AT = "WEATHER_UPDATED_AT"
     private val WEATHER_UNIT = "WEATHER_UNIT"
     private val WEATHER_REFRESH_MINUTES = "WEATHER_REFRESH_MINUTES"
+    private val UPDATE_LAST_CHECK = "UPDATE_LAST_CHECK"
     private val SCREEN_TIME_LAST_UPDATED = "SCREEN_TIME_LAST_UPDATED"
     private val LAUNCHER_RESTART_TIMESTAMP = "LAUNCHER_RECREATE_TIMESTAMP"
     private val SHOWN_ON_DAY_OF_YEAR = "SHOWN_ON_DAY_OF_YEAR"
@@ -198,6 +200,16 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean(HOME_BOTTOM_ALIGNMENT, false)
         set(value) = prefs.edit { putBoolean(HOME_BOTTOM_ALIGNMENT, value).apply() }
 
+    /** Vertical position of the home app list; migrates the old bottom on/off toggle. */
+    var homeVerticalAlignment: Int
+        get() {
+            val stored = prefs.getInt(HOME_VERTICAL_ALIGNMENT, -1)
+            if (stored != -1) return stored
+            return if (prefs.getBoolean(HOME_BOTTOM_ALIGNMENT, false)) Gravity.BOTTOM
+            else Gravity.CENTER_VERTICAL
+        }
+        set(value) = prefs.edit { putInt(HOME_VERTICAL_ALIGNMENT, value).apply() }
+
     var appLabelAlignment: Int
         get() = prefs.getInt(APP_LABEL_ALIGNMENT, Gravity.START)
         set(value) = prefs.edit { putInt(APP_LABEL_ALIGNMENT, value).apply() }
@@ -249,6 +261,10 @@ class Prefs(context: Context) {
     var weatherRefreshMinutes: Int
         get() = prefs.getInt(WEATHER_REFRESH_MINUTES, 60)
         set(value) = prefs.edit { putInt(WEATHER_REFRESH_MINUTES, value).apply() }
+
+    var updateLastCheck: Long
+        get() = prefs.getLong(UPDATE_LAST_CHECK, 0L)
+        set(value) = prefs.edit { putLong(UPDATE_LAST_CHECK, value).apply() }
 
     var swipeLeftEnabled: Boolean
         get() = prefs.getBoolean(SWIPE_LEFT_ENABLED, true)

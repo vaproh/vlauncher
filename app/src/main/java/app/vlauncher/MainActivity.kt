@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import app.vlauncher.BuildConfig
 import app.vlauncher.data.Constants
 import app.vlauncher.data.Prefs
 import app.vlauncher.databinding.ActivityMainBinding
@@ -42,13 +43,18 @@ import app.vlauncher.helper.rateApp
 import app.vlauncher.helper.resetLauncherViaFakeActivity
 import app.vlauncher.helper.setPlainWallpaper
 import app.vlauncher.helper.Icons
+import app.vlauncher.helper.AppUpdate
+import app.vlauncher.helper.Updater
+import app.vlauncher.helper.createDialog
 import app.vlauncher.helper.shareApp
 import app.vlauncher.helper.showLauncherSelector
 import app.vlauncher.helper.showMessageDialog
 import app.vlauncher.helper.showToast
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -110,6 +116,7 @@ class MainActivity : AppCompatActivity() {
         initObservers(viewModel)
         viewModel.getAppList()
         Icons.warmUp(this)
+        checkForAppUpdate()
         registerShortcutCallback()
         setupOrientation()
 
@@ -346,6 +353,39 @@ class MainActivity : AppCompatActivity() {
             return
         // In Android 8.0, windowIsTranslucent cannot be used with screenOrientation=portrait
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
+    fun checkForAppUpdate(forced: Boolean = false) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val now = System.currentTimeMillis()
+            if (!forced && now - prefs.updateLastCheck < Updater.CHECK_INTERVAL_MS) return@launch
+            val update = Updater.checkLatest()
+            if (update == null) {
+                if (forced) withContext(Dispatchers.Main) { showToast(R.string.update_check_failed) }
+                return@launch
+            }
+            prefs.updateLastCheck = System.currentTimeMillis()
+            if (!Updater.isNewer(BuildConfig.VERSION_NAME, update.tag)) {
+                if (forced) withContext(Dispatchers.Main) { showToast(R.string.up_to_date) }
+                return@launch
+            }
+            withContext(Dispatchers.Main) { showUpdateDialog(update) }
+        }
+    }
+
+    private fun showUpdateDialog(update: AppUpdate) {
+        createDialog(
+            title = R.string.update_available,
+            action = R.string.download,
+            message = R.string.update_available_message,
+            onAction = {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val apk = Updater.downloadApk(this@MainActivity, update)
+                    if (apk != null) withContext(Dispatchers.Main) { Updater.installApk(this@MainActivity, apk) }
+                    else withContext(Dispatchers.Main) { showToast(R.string.update_download_failed) }
+                }
+            },
+        ).showRespectingStatusBar()
     }
 
     private fun backToHomeScreen() {
