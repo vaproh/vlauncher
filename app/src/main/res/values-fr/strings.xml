@@ -77,8 +77,6 @@
     <string name="roadmap">Feuille de route</string>
     <string name="date">Date</string>
     <string name="date_only">Date uniquement</string>
-    <string name="bottom_on">Bas : Activé</string>
-    <string name="bottom_off">Bas : Désactivé</string>
     <string name="please_set_olauncher_as_default_first">Veuillez d\'abord définir vlauncher comme lanceur par défaut.</string>
     <string name="affiliate">Affiliation</string>
     <string name="tip_start_typing_for_rename">Conseil : Commencez à écrire pour faire apparaitre l\'option RENOMMER.</string>

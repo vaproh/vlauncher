@@ -79,8 +79,6 @@
     <string name="roadmap">Färdplan</string>
     <string name="date">Datum</string>
     <string name="date_only">Endast datum</string>
-    <string name="bottom_on">Botten: På</string>
-    <string name="bottom_off">Botten: Av</string>
     <string name="please_set_olauncher_as_default_first">Vänligen ange vlauncher som förvald först</string>
     <string name="affiliate">Affiliate</string>
     <string name="tip_start_typing_for_rename">Tips: Börja skriv för BYT NAMN-alternativ för appen</string>

@@ -79,8 +79,6 @@
     <string name="roadmap">Plán vývoje</string>
     <string name="date">Datum</string>
     <string name="date_only">Pouze datum</string>
-    <string name="bottom_on">Dole: Zapnuto</string>
-    <string name="bottom_off">Dole: Vypnuto</string>
     <string name="please_set_olauncher_as_default_first">Nejprve prosím nastavte vlauncher jako výchozí</string>
     <string name="affiliate">Affiliate</string>
     <string name="tip_start_typing_for_rename">Tip: Začněte psát pro možnost přejmenování aplikace</string>

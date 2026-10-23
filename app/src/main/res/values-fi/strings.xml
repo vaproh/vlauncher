@@ -79,8 +79,6 @@
     <string name="roadmap">Etenemissuunnitelma</string>
     <string name="date">Päivämäärä</string>
     <string name="date_only">Vain päivämäärä</string>
-    <string name="bottom_on">Alaosa: Päällä</string>
-    <string name="bottom_off">Alaosa: Pois</string>
     <string name="please_set_olauncher_as_default_first">Aseta ensin vlauncher oletukseksi</string>
     <string name="affiliate">Kumppanuus</string>
     <string name="tip_start_typing_for_rename">Vinkki: Aloita kirjoittaminen saadaksesi sovelluksen NIMEÄ UUDELLEEN -vaihtoehdon</string>

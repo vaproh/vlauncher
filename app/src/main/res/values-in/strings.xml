@@ -77,8 +77,6 @@
     <string name="roadmap">Peta jalan</string>
     <string name="date">Tanggal</string>
     <string name="date_only">Tanggal saja</string>
-    <string name="bottom_on">Bawah: Nyala</string>
-    <string name="bottom_off">Bawah: Mati</string>
     <string name="please_set_olauncher_as_default_first">Silakan atur vlauncher sebagai peluncur default Anda terlebih dahulu</string>
     <string name="affiliate">Afiliasi</string>
     <string name="tip_start_typing_for_rename">Tip: Mulailah mengetik untuk opsi RENAME aplikasi</string>

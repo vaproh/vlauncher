@@ -79,8 +79,6 @@
     <string name="roadmap">Veikart</string>
     <string name="date">Dato</string>
     <string name="date_only">Kun dato</string>
-    <string name="bottom_on">Nederst: På</string>
-    <string name="bottom_off">Nederst: Av</string>
     <string name="please_set_olauncher_as_default_first">Angi først vlauncher som standard</string>
     <string name="affiliate">Partner</string>
     <string name="tip_start_typing_for_rename">Tips: Begynn å skrive for å få opp alternativet for å endre navn på appen</string>

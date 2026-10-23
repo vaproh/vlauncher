@@ -107,8 +107,6 @@
     <string name="roadmap">路线图</string>
     <string name="date">日期</string>
     <string name="date_only">仅限日期</string>
-    <string name="bottom_on">底部：开</string>
-    <string name="bottom_off">底部：关</string>
     <string name="please_set_olauncher_as_default_first">请先将 vlauncher 设置为默认启动器</string>
     <string name="affiliate">联盟</string>
     <string name="app_not_found">找不到应用程序</string>

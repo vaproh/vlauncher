@@ -77,8 +77,6 @@
     <string name="roadmap">Hoja de ruta</string>
     <string name="date">Fecha</string>
     <string name="date_only">Solo fecha</string>
-    <string name="bottom_on">Abajo: Sí</string>
-    <string name="bottom_off">Abajo: No</string>
     <string name="please_set_olauncher_as_default_first">Primero seleccione vlauncher como su iniciador predeterminado</string>
     <string name="affiliate">Afiliado</string>
     <string name="tip_start_typing_for_rename">Sugerencia: Comienza a escribir para RENOMBRAR la aplicación</string>

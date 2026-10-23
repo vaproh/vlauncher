@@ -78,8 +78,6 @@
     <string name="roadmap">Дорожня карта</string>
     <string name="date">Дата</string>
     <string name="date_only">Тільки дата</string>
-    <string name="bottom_on">Внизу: Увімк.</string>
-    <string name="bottom_off">Внизу: Вимк.</string>
     <string name="please_set_olauncher_as_default_first">Спочатку встановіть vlauncher як стандартний лаунчер.</string>
     <string name="affiliate">Партнер</string>
     <string name="tip_start_typing_for_rename">Порада: почніть вводити текст, щоб перейменувати програму.</string>

@@ -79,8 +79,6 @@
     <string name="roadmap">रोडमैप</string>
     <string name="date">दिनांक</string>
     <string name="date_only">सिर्फ़ दिनांक</string>
-    <string name="bottom_on">नीचे: चालू</string>
-    <string name="bottom_off">नीचे: बंद</string>
     <string name="please_set_olauncher_as_default_first">कृपया पहले vlauncher को डिफ़ॉल्ट सेट करें</string>
     <string name="affiliate">अफिलिएट</string>
     <string name="tip_start_typing_for_rename">टिप: ऐप का नाम बदलने के विकल्प के लिए टाइप करना शुरू करें</string>

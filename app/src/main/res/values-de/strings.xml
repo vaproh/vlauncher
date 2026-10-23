@@ -106,8 +106,6 @@
     <string name="roadmap">Roadmap</string>
     <string name="date">Datum</string>
     <string name="date_only">Nur Datum</string>
-    <string name="bottom_on">Unten: Ein</string>
-    <string name="bottom_off">Unten: Aus</string>
     <string name="please_set_olauncher_as_default_first">Bitte legen Sie zunächst vlauncher als Ihren Standard-Launcher fest</string>
     <string name="affiliate">Affiliate</string>
     <string name="app_not_found">App nicht gefunden</string>

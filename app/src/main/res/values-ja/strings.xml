@@ -107,8 +107,6 @@
     <string name="roadmap">ロードマップ</string>
     <string name="date">日付</string>
     <string name="date_only">日付のみ</string>
-    <string name="bottom_on">下: オン</string>
-    <string name="bottom_off">下: オフ</string>
     <string name="please_set_olauncher_as_default_first">まず vlauncher をデフォルトのランチャーとして設定してください</string>
     <string name="affiliate">アフィリエイト</string>
     <string name="app_not_found">アプリが見つかりません</string>

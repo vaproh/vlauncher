@@ -78,8 +78,6 @@
     <string name="roadmap">Дорожная карта</string>
     <string name="date">Дата</string>
     <string name="date_only">Только дата</string>
-    <string name="bottom_on">Внизу: Вкл</string>
-    <string name="bottom_off">Внизу: Выкл</string>
     <string name="please_set_olauncher_as_default_first">Сначала установите vlauncher в качестве лаунчера по умолчанию.</string>
     <string name="affiliate">Партнер</string>
     <string name="tip_start_typing_for_rename">Совет: начните вводить текст чтобы ПЕРЕИМЕНОВАТЬ приложение.</string>

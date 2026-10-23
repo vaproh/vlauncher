@@ -79,8 +79,6 @@
     <string name="roadmap">Lộ trình</string>
     <string name="date">Ngày</string>
     <string name="date_only">Chỉ ngày</string>
-    <string name="bottom_on">Dưới cùng: Bật</string>
-    <string name="bottom_off">Dưới cùng: Tắt</string>
     <string name="please_set_olauncher_as_default_first">Vui lòng đặt vlauncher làm mặc định trước</string>
     <string name="affiliate">Tiếp thị liên kết</string>
     <string name="tip_start_typing_for_rename">Mẹo: Bắt đầu gõ để có tùy chọn ĐỔI TÊN ứng dụng</string>

@@ -107,8 +107,6 @@
     <string name="roadmap">خريطة الطريق</string>
     <string name="date">تاريخ</string>
     <string name="date_only">التاريخ فقط</string>
-    <string name="bottom_on">المحاذاة لأسفل</string>
-    <string name="bottom_off">المحاذاة لأعلى</string>
     <string name="please_set_olauncher_as_default_first">يرجى تعيين vlauncher كمشغل افتراضي أولاً</string>
     <string name="affiliate">الشراكة</string>
     <string name="app_not_found">التطبيق غير موجود</string>

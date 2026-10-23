@@ -107,8 +107,6 @@
     <string name="roadmap">Yol Çizelgesi</string>
     <string name="date">Tarih</string>
     <string name="date_only">Sadece tarih</string>
-    <string name="bottom_on">Alt: Açık</string>
-    <string name="bottom_off">Alt: Kapalı</string>
     <string name="please_set_olauncher_as_default_first">Lütfen önce vlauncher\'ı varsayılan başlatıcınız olarak ayarlayın</string>
     <string name="affiliate">Ortak</string>
     <string name="app_not_found">Uygulama bulunamadı</string>

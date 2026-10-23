@@ -79,8 +79,6 @@
     <string name="roadmap">Køreplan</string>
     <string name="date">Dato</string>
     <string name="date_only">Kun dato</string>
-    <string name="bottom_on">Nederst: Til</string>
-    <string name="bottom_off">Nederst: Fra</string>
     <string name="please_set_olauncher_as_default_first">Angiv venligst vlauncher som standard først</string>
     <string name="affiliate">Affiliate</string>
     <string name="tip_start_typing_for_rename">Tip: Begynd at skrive for muligheden for at omdøbe appen</string>

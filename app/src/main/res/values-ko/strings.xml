@@ -72,8 +72,6 @@
     <string name="roadmap">로드맵</string>
     <string name="date">날짜</string>
     <string name="date_only">날짜만</string>
-    <string name="bottom_on">하단: 켬</string>
-    <string name="bottom_off">하단: 끔</string>
     <string name="please_set_olauncher_as_default_first">먼저 vlauncher를 기본으로 설정하세요</string>
     <string name="affiliate">제휴</string>
     <string name="tip_start_typing_for_rename">팁: 앱 이름 변경을 위해 입력을 시작하세요</string>

@@ -80,8 +80,6 @@
     <string name="roadmap">Ütemterv</string>
     <string name="date">Dátum</string>
     <string name="date_only">Csak dátum</string>
-    <string name="bottom_on">Alsó: Be</string>
-    <string name="bottom_off">Alsó: Ki</string>
     <string name="please_set_olauncher_as_default_first">Kérjük, először állítsa be az vlauncher-t alapértelmezettként</string>
     <string name="affiliate">Affiliate</string>
     <string name="tip_start_typing_for_rename">Tipp: Kezdjen el gépelni az alkalmazás ÁTNEVEZÉSE opcióhoz</string>

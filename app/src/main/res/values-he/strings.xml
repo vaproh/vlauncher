@@ -68,8 +68,6 @@
     <string name="roadmap">מפת דרכים</string>
     <string name="date">תאריך</string>
     <string name="date_only">תאריך בלבד</string>
-    <string name="bottom_on">הצגה למטה: מופעל</string>
-    <string name="bottom_off">הצגה למטה: כבוי</string>
     <string name="please_set_olauncher_as_default_first">ראשית, נא להגדיר את vlauncher בתור ברירת המחדל למסך בית.</string>
     <string name="affiliate">שותפים</string>
     <string name="tip_start_typing_for_rename">עצה: אפשר להתחיל להקליד בשביל להגיע לאפשרות לשינוי שם של יישומים</string>

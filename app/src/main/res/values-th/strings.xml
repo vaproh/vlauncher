@@ -79,8 +79,6 @@
     <string name="roadmap">แผนงาน</string>
     <string name="date">วันที่</string>
     <string name="date_only">วันที่เท่านั้น</string>
-    <string name="bottom_on">ด้านล่าง: เปิด</string>
-    <string name="bottom_off">ด้านล่าง: ปิด</string>
     <string name="please_set_olauncher_as_default_first">โปรดตั้งค่า vlauncher เป็นค่าเริ่มต้นก่อน</string>
     <string name="affiliate">พันธมิตร</string>
     <string name="tip_start_typing_for_rename">เคล็ดลับ: เริ่มพิมพ์เพื่อดูตัวเลือกเปลี่ยนชื่อแอป</string>
