@@ -725,7 +725,8 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         anchor.showPopupMenu(configure = { menu ->
             Fonts.options.forEachIndexed { index, option ->
                 val label = getString(option.label)
-                val face = Fonts.previewTypeface(requireContext(), option.id)
+                // Warmed off-thread; plain label until the cache is ready.
+                val face = Fonts.previewCached(option.id)
                 val title = if (face != null) {
                     SpannableString(label).apply {
                         setSpan(CustomTypefaceSpan(face), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

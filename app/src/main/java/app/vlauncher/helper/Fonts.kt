@@ -70,6 +70,12 @@ object Fonts {
     /** Preloads the preview typefaces off the main thread so the picker opens without a hitch. */
     fun warmUp(context: Context) {
         val app = context.applicationContext
-        options.forEach { previewTypeface(app, it.id) }
+        previewCache = options.associate { it.id to previewTypeface(app, it.id) }
     }
+
+    /** Warmed preview typeface, or null when not yet loaded (or unloadable): use a plain label. */
+    fun previewCached(id: String): Typeface? = previewCache[id]
+
+    @Volatile
+    private var previewCache: Map<String, Typeface?> = emptyMap()
 }
