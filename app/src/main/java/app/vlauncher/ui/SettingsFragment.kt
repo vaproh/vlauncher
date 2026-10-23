@@ -9,6 +9,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
+import android.text.SpannableString
+import android.text.Spanned
 import android.provider.Settings
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -45,6 +47,7 @@ import app.vlauncher.helper.openUrl
 import app.vlauncher.helper.setPlainWallpaper
 import app.vlauncher.helper.shareApp
 import app.vlauncher.helper.OlDialog
+import app.vlauncher.helper.CustomTypefaceSpan
 import app.vlauncher.helper.Fonts
 import app.vlauncher.helper.Icons
 import app.vlauncher.helper.showPopupMenu
@@ -110,6 +113,8 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         populateActionHints()
         initClickListeners()
         initObservers()
+        // Warm the font preview cache off the main thread so the picker opens without a hitch.
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) { Fonts.warmUp(requireContext()) }
     }
 
     override fun onClick(view: View) {
@@ -719,7 +724,17 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
     private fun showFontMenu(anchor: View) {
         anchor.showPopupMenu(configure = { menu ->
             Fonts.options.forEachIndexed { index, option ->
-                menu.add(Menu.NONE, index, index, option.label)
+                val label = getString(option.label)
+                // Warmed off-thread; plain label until the cache is ready.
+                val face = Fonts.previewCached(option.id)
+                val title = if (face != null) {
+                    SpannableString(label).apply {
+                        setSpan(CustomTypefaceSpan(face), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    }
+                } else {
+                    label
+                }
+                menu.add(Menu.NONE, index, index, title)
             }
         }) { item ->
             val option = Fonts.options.getOrNull(item.itemId)
