@@ -113,6 +113,8 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         populateActionHints()
         initClickListeners()
         initObservers()
+        // Warm the font preview cache off the main thread so the picker opens without a hitch.
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) { Fonts.warmUp(requireContext()) }
     }
 
     override fun onClick(view: View) {

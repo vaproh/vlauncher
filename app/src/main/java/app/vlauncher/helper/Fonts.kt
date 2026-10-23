@@ -66,4 +66,10 @@ object Fonts {
             else -> Typeface.create("sans-serif-light", Typeface.NORMAL)
         }
     }
+
+    /** Preloads the preview typefaces off the main thread so the picker opens without a hitch. */
+    fun warmUp(context: Context) {
+        val app = context.applicationContext
+        options.forEach { previewTypeface(app, it.id) }
+    }
 }
