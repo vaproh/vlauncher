@@ -49,6 +49,7 @@ import app.vlauncher.helper.setPlainWallpaperByTheme
 import app.vlauncher.helper.showToast
 import app.vlauncher.helper.Weather
 import app.vlauncher.helper.WeatherBreezy
+import app.vlauncher.helper.openUrl
 import app.vlauncher.helper.WeatherLocation
 import app.vlauncher.helper.WeatherReading
 import app.vlauncher.listener.OnSwipeTouchListener
@@ -110,6 +111,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
             // R.id.recents -> {}
             R.id.clock -> openClockApp()
             R.id.date -> openCalendarApp()
+            R.id.tvWeather -> openWeatherApp()
             R.id.setDefaultLauncher -> viewModel.resetLauncherLiveData.call()
             R.id.tvScreenTime -> openScreenTimeDigitalWellbeing()
 
@@ -124,8 +126,20 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         }
     }
 
-    private fun openClockApp() {
-        if (prefs.clockAppPackage.isBlank())
+    private fun openWeatherApp() {
+        val context = requireContext()
+        val breezy = WeatherBreezy.installedPackage(context)
+        if (breezy != null) {
+            val launch = context.packageManager.getLaunchIntentForPackage(breezy)
+            if (launch != null) {
+                startActivity(launch)
+                return
+            }
+        }
+        context.openUrl("https://f-droid.org/packages/org.breezyweather/")
+    }
+
+    private fun openClockApp() {        if (prefs.clockAppPackage.isBlank())
             openAlarmApp(requireContext())
         else
             launchApp(
@@ -206,7 +220,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
                     prefs.dailyWallpaper = false
                     viewModel.cancelWallpaperWorker()
                 }
-                prefs.homeBottomAlignment = false
+                prefs.homeVerticalAlignment = Gravity.CENTER_VERTICAL
                 setHomeAlignment()
             }
             if (binding.firstRunTips.isVisible) return@Observer
@@ -246,6 +260,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
         // binding.recents.setOnClickListener(this)
         binding.clock.setOnClickListener(this)
         binding.date.setOnClickListener(this)
+        binding.tvWeather.setOnClickListener(this)
         binding.clock.setOnLongClickListener(this)
         binding.date.setOnLongClickListener(this)
         binding.setDefaultLauncher.setOnClickListener(this)
@@ -273,7 +288,7 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun setHomeAlignment(horizontalGravity: Int = prefs.homeAlignment) {
-        val verticalGravity = if (prefs.homeBottomAlignment) Gravity.BOTTOM else Gravity.CENTER_VERTICAL
+        val verticalGravity = prefs.homeVerticalAlignment
         binding.homeAppsLayout.gravity = horizontalGravity or verticalGravity
         binding.dateTimeLayout.gravity = horizontalGravity
         binding.homeApp1.gravity = horizontalGravity

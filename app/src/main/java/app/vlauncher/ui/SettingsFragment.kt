@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import app.vlauncher.BuildConfig
+import app.vlauncher.MainActivity
 import app.vlauncher.MainViewModel
 import app.vlauncher.R
 import app.vlauncher.data.Constants
@@ -154,6 +155,8 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
                 requireContext().openUrl(Constants.URL_ABOUT_OLAUNCHER)
             }
 
+            R.id.checkUpdates -> (requireActivity() as MainActivity).checkForAppUpdate(forced = true)
+
             R.id.share -> requireActivity().shareApp()
             R.id.github -> requireContext().openUrl(Constants.URL_OLAUNCHER_GITHUB)
             R.id.privacy -> requireContext().openUrl(Constants.URL_OLAUNCHER_PRIVACY)
@@ -182,6 +185,7 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         binding.appInfo.setOnClickListener(this)
         binding.setLauncher.setOnClickListener(this)
         binding.aboutOlauncher.setOnClickListener(this)
+        binding.checkUpdates.setOnClickListener(this)
         binding.autoShowKeyboard.setOnClickListener(this)
         binding.toggleLock.setOnClickListener(this)
         // Home button for recents feature disabled
@@ -260,19 +264,14 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
     }
 
     private fun showAlignmentMenu(anchor: View) {
-        anchor.showPopupMenu(
-            R.menu.alignment,
-            configure = { menu ->
-                menu.findItem(R.id.alignmentBottom).setTitle(
-                    if (prefs.homeBottomAlignment) R.string.bottom_on else R.string.bottom_off
-                )
-            }
-        ) { item ->
+        anchor.showPopupMenu(R.menu.alignment) { item ->
             when (item.itemId) {
                 R.id.alignmentLeft -> updateAppAlignment(Gravity.START)
                 R.id.alignmentCenter -> updateAppAlignment(Gravity.CENTER)
                 R.id.alignmentRight -> updateAppAlignment(Gravity.END)
-                R.id.alignmentBottom -> updateHomeBottomAlignment()
+                R.id.alignmentTop -> updateVerticalAlignment(Gravity.TOP)
+                R.id.alignmentMiddle -> updateVerticalAlignment(Gravity.CENTER_VERTICAL)
+                R.id.alignmentBottom -> updateVerticalAlignment(Gravity.BOTTOM)
             }
         }
     }
@@ -837,22 +836,28 @@ class SettingsFragment : BaseFragment(), View.OnClickListener, View.OnLongClickL
         }
     }
 
-    private fun updateHomeBottomAlignment() {
-        if (viewModel.isOlauncherDefault.value != true) {
+    private fun updateVerticalAlignment(gravity: Int) {
+        if (gravity == Gravity.BOTTOM && viewModel.isOlauncherDefault.value != true) {
             requireContext().showToast(getString(R.string.please_set_olauncher_as_default_first), Toast.LENGTH_LONG)
             return
         }
-        prefs.homeBottomAlignment = !prefs.homeBottomAlignment
+        prefs.homeVerticalAlignment = gravity
         populateAlignment()
         viewModel.updateHomeAlignment(prefs.homeAlignment)
     }
 
     private fun populateAlignment() {
-        when (prefs.homeAlignment) {
-            Gravity.START -> binding.alignment.text = getString(R.string.left)
-            Gravity.CENTER -> binding.alignment.text = getString(R.string.center)
-            Gravity.END -> binding.alignment.text = getString(R.string.right)
+        val horizontal = when (prefs.homeAlignment) {
+            Gravity.START -> getString(R.string.left)
+            Gravity.END -> getString(R.string.right)
+            else -> getString(R.string.center)
         }
+        val vertical = when (prefs.homeVerticalAlignment) {
+            Gravity.TOP -> getString(R.string.top)
+            Gravity.BOTTOM -> getString(R.string.bottom)
+            else -> getString(R.string.middle)
+        }
+        binding.alignment.text = "$horizontal, $vertical"
     }
 
     // Home button for recents feature disabled

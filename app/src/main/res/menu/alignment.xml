@@ -9,8 +9,13 @@
     <item
         android:id="@+id/alignmentRight"
         android:title="@string/right" />
-    <!-- Title is set at runtime to bottom_on / bottom_off -->
+    <item
+        android:id="@+id/alignmentTop"
+        android:title="@string/top" />
+    <item
+        android:id="@+id/alignmentMiddle"
+        android:title="@string/middle" />
     <item
         android:id="@+id/alignmentBottom"
-        android:title="@string/bottom_off" />
+        android:title="@string/bottom" />
 </menu>

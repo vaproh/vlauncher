@@ -113,8 +113,9 @@
     <string name="roadmap">Roadmap</string>
     <string name="date">Date</string>
     <string name="date_only">Date only</string>
-    <string name="bottom_on">Bottom: On</string>
-    <string name="bottom_off">Bottom: Off</string>
+    <string name="top">Top</string>
+    <string name="middle">Middle</string>
+    <string name="bottom">Bottom</string>
     <string name="please_set_olauncher_as_default_first">Please set vlauncher as default first</string>
     <string name="affiliate">Affiliate</string>
     <string name="tip_start_typing_for_rename">Tip: Start typing for app RENAME option</string>
@@ -157,6 +158,12 @@
     <string name="adapter_hide">Hide</string>
     <string name="are_you_using_your_phone_or_is_your_phone_using_you">Are you using your phone, or is your phone using you?</string>
     <string name="about_olauncher">About and FAQs</string>
+    <string name="check_for_updates">Check for updates</string>
+    <string name="update_available">Update available</string>
+    <string name="update_available_message">A new version of vlauncher is ready. Download and install it now?</string>
+    <string name="download">Download</string>
+    <string name="up_to_date">You are up to date</string>
+    <string name="update_download_failed">Update download failed. Try again later.</string>
     <string name="screen_time">Screen time</string>
     <string name="learn_more">Learn more</string>
     <string name="did_you_know">Did you know?</string>
