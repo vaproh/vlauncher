@@ -220,8 +220,10 @@ class HomeFragment : BaseFragment(), View.OnClickListener, View.OnLongClickListe
                     prefs.dailyWallpaper = false
                     viewModel.cancelWallpaperWorker()
                 }
-                prefs.homeVerticalAlignment = Gravity.CENTER_VERTICAL
-                setHomeAlignment()
+                if (prefs.homeVerticalAlignment == Gravity.BOTTOM) {
+                    prefs.homeVerticalAlignment = Gravity.CENTER_VERTICAL
+                    setHomeAlignment()
+                }
             }
             if (binding.firstRunTips.isVisible) return@Observer
             binding.setDefaultLauncher.isVisible = it.not() && prefs.hideSetDefaultLauncher.not()

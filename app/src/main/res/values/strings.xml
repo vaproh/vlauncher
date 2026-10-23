@@ -163,6 +163,7 @@
     <string name="update_available_message">A new version of vlauncher is ready. Download and install it now?</string>
     <string name="download">Download</string>
     <string name="up_to_date">You are up to date</string>
+    <string name="update_check_failed">Update check failed. Try again later.</string>
     <string name="update_download_failed">Update download failed. Try again later.</string>
     <string name="screen_time">Screen time</string>
     <string name="learn_more">Learn more</string>

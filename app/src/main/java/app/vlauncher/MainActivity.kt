@@ -359,8 +359,12 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             val now = System.currentTimeMillis()
             if (!forced && now - prefs.updateLastCheck < Updater.CHECK_INTERVAL_MS) return@launch
-            prefs.updateLastCheck = now
-            val update = Updater.checkLatest() ?: return@launch
+            val update = Updater.checkLatest()
+            if (update == null) {
+                if (forced) withContext(Dispatchers.Main) { showToast(R.string.update_check_failed) }
+                return@launch
+            }
+            prefs.updateLastCheck = System.currentTimeMillis()
             if (!Updater.isNewer(BuildConfig.VERSION_NAME, update.tag)) {
                 if (forced) withContext(Dispatchers.Main) { showToast(R.string.up_to_date) }
                 return@launch

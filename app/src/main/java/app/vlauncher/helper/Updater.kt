@@ -71,16 +71,23 @@ object Updater {
             val dir = File(context.cacheDir, "updates").apply { mkdirs() }
             val file = File(dir, "vlauncher-${update.tag}.apk")
             if (file.exists() && file.length() > 0) return file
-            val connection = URL(update.apkUrl).openConnection() as HttpURLConnection
+            val tmp = File(dir, "vlauncher-${update.tag}.apk.tmp")
+            var ok = false
             try {
-                connection.connectTimeout = 15_000
-                connection.readTimeout = 30_000
-                if (connection.responseCode != HttpURLConnection.HTTP_OK) return null
-                connection.inputStream.use { input -> file.outputStream().use { input.copyTo(it) } }
+                val connection = URL(update.apkUrl).openConnection() as HttpURLConnection
+                try {
+                    connection.connectTimeout = 15_000
+                    connection.readTimeout = 30_000
+                    if (connection.responseCode != HttpURLConnection.HTTP_OK) return null
+                    connection.inputStream.use { input -> tmp.outputStream().use { input.copyTo(it) } }
+                } finally {
+                    connection.disconnect()
+                }
+                ok = tmp.renameTo(file)
             } finally {
-                connection.disconnect()
+                if (!ok) tmp.delete()
             }
-            file
+            if (ok) file else null
         } catch (e: Exception) {
             e.printStackTrace()
             null

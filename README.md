@@ -18,7 +18,7 @@ No ads, no telemetry, no analytics.
 - **Custom fonts** - Default, Monospace, Hack, JetBrains Mono, Iosevka, Inter; each option previews in its own typeface right in the picker
 - **Icon pack support** - drawer and home icons resolve from installed icon packs (ADW, Go, Nova, Apex), with a generated monogram fallback
 - **Home screen icons** - optional app icons on the home screen, with separate toggles for home and drawer
-- **Wallpaper rotation** - daily wallpapers with a configurable change frequency (30 minutes to 12 hours)
+- **Wallpaper rotation** - daily wallpapers with a configurable change frequency (hourly to weekly)
 - **Weather line** - optional temperature + condition under the clock; uses
   [Breezy Weather](https://github.com/breezy-weather/breezy-weather)'s shared
   data when installed, otherwise Open-Meteo (keyless) with device location or a
